@@ -1,6 +1,7 @@
 import pygame
 import sys
 
+
 class Utils:
     def __init__(self,pantalla):
         self.NEGRO = (0, 0, 0)
@@ -26,14 +27,58 @@ class Utils:
 
     # Funciones para cada botón
     def empezar_juego(self):
-        print("Empezar juego")  # Aquí iría la lógica para empezar el juego
+        from tablero import Tablero
+        en_menu = True
+        while en_menu:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            tablero = Tablero(self.pantalla)
+            tablero.imprimir_tablero()
+                
+            pygame.display.flip()
+            pygame.time.Clock().tick(60)
 
     def ver_tutorial(self):
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
 
     def ver_info_creador(self):
-        print("Ver info del creador")  # Aquí iría la lógica para mostrar la info del creador
-
+        # Cargar y redimensionar la imagen a tamaño carnet (130x170 píxeles aproximadamente)
+        ruta = "foto_orla.jpeg"
+        mi_foto_original = pygame.image.load(ruta)  # Carga la foto
+        mi_foto = pygame.transform.scale(mi_foto_original, (130, 170))  # Redimensiona la foto
+    
+        # Calcular la posición para colocar la foto en la parte superior derecha con un margen
+        margen_derecho = 10  # Margen derecho en píxeles
+        margen_superior = 10  # Margen superior en píxeles
+        posicion_x = self.pantalla.get_width() - mi_foto.get_width() - margen_derecho
+        posicion_y = margen_superior
+    
+        # Limpiar pantalla y dibujar fondo
+        self.pantalla.fill(self.BLANCO)
+    
+        # Dibujar la imagen en la posición calculada
+        self.pantalla.blit(mi_foto, (posicion_x, posicion_y))
+    
+        # Configurar y dibujar el texto de la descripción y contacto como antes
+        fuente = pygame.font.Font(None, 24)
+        descripcion = fuente.render("Proyecto de Trabajo de Fin de Grado realizado por María de las Maravillas Luque Carmona", True, self.NEGRO)
+        descripcion_rect = descripcion.get_rect(center=(self.pantalla.get_width() / 2, 300))
+        self.pantalla.blit(descripcion, descripcion_rect)
+    
+        contacto = fuente.render("Contacto: mmlc0007@red.ujaen.es", True, self.NEGRO)
+        contacto_rect = contacto.get_rect(center=(self.pantalla.get_width() / 2, 350))
+        self.pantalla.blit(contacto, contacto_rect)
+    
+        # Actualizar la pantalla
+        pygame.display.flip()
+    
+        # Esperar un momento antes de regresar al menú
+        pygame.time.wait(5000)  # Espera 5 segundos
+        self.mostrar_menu()  # Regresa al menú principal
+    
     # Pantalla de menú
     def mostrar_menu(self):
         en_menu = True
@@ -42,6 +87,7 @@ class Utils:
                 if evento.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                    en_menu = False
             
             self.pantalla.fill(self.BLANCO)
             self.dibujar_boton("Empezar", 100, 100, 200, 50, self.GRIS, self.ROJO, self.empezar_juego)

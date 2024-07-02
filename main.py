@@ -20,7 +20,7 @@ pygame.display.set_caption("SUDOku")
 NEGRO = (0, 0, 0)
 BLANCO = (255, 255, 255)
 
-utils.mostrar_menu()
+
 
 # Bucle principal del juego
 while True:
@@ -36,7 +36,7 @@ while True:
     pantalla.fill(BLANCO)
 
     # Dibujamos elementos en la pantalla
-
+    utils.mostrar_menu()
     # Actualizamos la pantalla
     pygame.display.flip()
 
