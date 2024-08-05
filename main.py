@@ -14,7 +14,6 @@ class Utils:
         self.temporizador_iniciado = False
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
-        self.modo_comprobacion = False
         self.tablero = Tablero(self.pantalla)
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None):
@@ -31,10 +30,11 @@ class Utils:
         texto_rect = texto.get_rect(center=(x + ancho / 2, y + alto / 2))
         self.pantalla.blit(texto, texto_rect)
 
+
     def empezar_juego(self):
         en_menu = True
         celda_seleccionada = None
-
+        cambio_en_tablero = True
         while en_menu:
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -42,54 +42,56 @@ class Utils:
                     sys.exit()
                     en_menu = False
                 elif evento.type == pygame.MOUSEBUTTONDOWN:
-                    if self.boton_comprobar.collidepoint(evento.pos):
-                        self.modo_comprobacion = True
-                    else:
-                        pos = pygame.mouse.get_pos()
-                        columna = (pos[0] - globals.MARGEN) // globals.TAMAÑO_CELDA
-                        fila = (pos[1] - globals.MARGEN) // globals.TAMAÑO_CELDA
-                        if 0 <= columna < 9 and 0 <= fila < 9:
-                            celda_seleccionada = (fila, columna)
+                    pos = pygame.mouse.get_pos()
+                    columna = (pos[0] - globals.MARGEN) // globals.TAMAÑO_CELDA
+                    fila = (pos[1] - globals.MARGEN) // globals.TAMAÑO_CELDA
+                    if 0 <= columna < 9 and 0 <= fila < 9:
+                        celda_seleccionada = (fila, columna)
+                        cambio_en_tablero = True
                 elif evento.type == pygame.KEYDOWN and celda_seleccionada:
                     if evento.unicode.isdigit() and evento.unicode != '0':
                         fila, columna = celda_seleccionada
                         self.tablero.set_valor(fila, columna, int(evento.unicode))
+                        cambio_en_tablero = True
                     elif evento.key == pygame.K_BACKSPACE:
                         self.tablero.borrar_valor(fila, columna)
+                        cambio_en_tablero = True
 
-            self.pantalla.fill(globals.BLANCO)
-            
-            if self.modo_comprobacion:
-                self.comprobar_solucion()
+            if cambio_en_tablero:
+                self.pantalla.fill(globals.BLANCO)
+                
 
-            if celda_seleccionada:
-                fila, columna = celda_seleccionada
-                self.iluminar_celdas(fila, columna)
-                self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)
-            
-            self.tablero.imprimir_numeros()
-            self.tablero.imprimir_tablero()
+                if celda_seleccionada:
+                    fila, columna = celda_seleccionada
+                    self.iluminar_celdas(fila, columna)
+                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)
+                
+                self.tablero.imprimir_numeros()
+                self.tablero.imprimir_tablero()
+                cambio_en_tablero = False
 
             # Dibujar temporizador y botones
             hueco_x = globals.PANTALLA_ANCHO - 225  # Ajustar según el tamaño del hueco
             self.dibujar_boton("Iniciar", hueco_x, 50, 100, 50, globals.GRIS, globals.VERDE, self.iniciar_temporizador)
+            self.dibujar_temporizador()
             self.dibujar_boton("Detener", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.detener_temporizador)
             self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS, globals.AZUL, self.comprobar_solucion)
             self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS, globals.AMARILLO, self.tablero.mostrar_solucion)
-            self.dibujar_boton("Salir", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.salir_juego)
+            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero)
+            self.dibujar_boton("Salir", hueco_x, 290, 210, 50, globals.GRIS, globals.MORADO_CLARO, self.salir_juego)
 
 
             pygame.display.flip()
             pygame.time.Clock().tick(60)
+            
 
     def comprobar_solucion(self):
         for fila in range(9):
             for columna in range(9):
-                if self.tablero.inicial[fila][columna] == 0:  # Solo comprobar celdas que no estaban rellenas inicialmente
-                    if self.tablero.sudoku[fila][columna] == self.tablero.resuelto[fila][columna]:
-                        self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO)  # Celda correcta
-                    else:
-                        self.iluminar_celda_seleccionada(fila, columna, globals.ROJO)  # Celda incorrecta
+                if self.tablero.sudoku[fila][columna] == self.tablero.resuelto[fila][columna]:
+                    self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO)  # Celda correcta
+                else:
+                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)  # Celda incorrecta
         self.tablero.imprimir_numeros()
         self.tablero.imprimir_tablero()
         pygame.display.update()
@@ -113,8 +115,8 @@ class Utils:
         self.tiempo_actual = 0  # Poner el tiempo a cero
 
     def salir_juego(self):
-        # Implementar lógica para salir del juego y volver al menú
-        pass
+        pygame.quit()
+        sys.exit()
 
     def iluminar_celdas(self, fila, columna):
         # Iluminar las celdas del cuadrado 3x3
@@ -219,26 +221,47 @@ class Tablero:
                                 [9, 6, 1, 5, 3, 7, 2, 8, 4],
                                 [2, 8, 7, 4, 1, 9, 6, 3, 5],
                                 [3, 4, 5, 2, 8, 6, 1, 7, 9]])
-        self.inicial = np.copy(self.sudoku)
+        self.inicial = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
+                                [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                                [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                                [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                                [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                                [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                                [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                                [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                                [0, 0, 0, 0, 8, 0, 0, 7, 9]])
         self.pantalla = pantalla
 
     def set_valor(self, fila, columna, valor):
         if self.inicial[fila, columna] == 0:  # Solo permitir cambios en celdas que eran 0 inicialmente
             if self.es_posible(fila, columna, valor):
-                self.sudoku[fila, columna] = valor
+                self.sudoku[fila][columna] = valor
             else:
-                self.sudoku[fila, columna] = -valor
+                self.sudoku[fila][columna] = -valor
 
     def borrar_valor(self, fila, columna):
-        if self.inicial[fila, columna] == 0:  # Solo permitir borrar en celdas que eran 0 inicialmente
-            self.sudoku[fila, columna] = 0
+        if self.inicial[fila][columna] == 0:  # Solo permitir borrar en celdas que eran 0 inicialmente
+            self.sudoku[fila][columna] = 0
+
+    def borrar_tablero(self):
+        print("Borrando tablero")
+        for fila in range(9):
+            for columna in range(9):
+                self.sudoku[fila][columna] = self.inicial[fila][columna]
+
+        # Limpiar la pantalla
+        self.pantalla.fill(globals.BLANCO)
+
+        self.imprimir_numeros()
+        self.imprimir_tablero()
+        pygame.display.update()
 
     def es_posible(self, fila, columna, numero):
         # Verificar fila
         if numero in self.sudoku[fila]:
             return False
         # Verificar columna
-        if numero in self.sudoku[:, columna]:
+        if numero in [fila[columna] for fila in self.sudoku]:
             return False
         # Verificar cuadrado 3x3
         inicio_fila = (fila // 3) * 3
@@ -248,6 +271,7 @@ class Tablero:
         return True
 
     def imprimir_tablero(self):
+        print("Imprimiendo tablero")
         for fila in range(10):
             grosor = 4 if fila % 3 == 0 else 1
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
@@ -255,10 +279,11 @@ class Tablero:
 
 
     def imprimir_numeros(self, solucion=False):
+        print("Imprimiendo números")
         for fila in range(9):
             for columna in range(9):
                 if not solucion:
-                    valor = self.sudoku[fila, columna]
+                    valor = self.sudoku[fila][columna]
                 else:
                     valor = self.resuelto[fila, columna]
                 if valor != 0:
@@ -288,21 +313,23 @@ class Tablero:
             self.pantalla.blit(texto, texto_rect)
 
     def comprobar_solucion(self):
+        print("comprobando solución")
         for fila in range(9):
             for columna in range(9):
                 if self.inicial[fila, columna] == 0:  # Solo comprobar celdas que no estaban rellenas inicialmente
                     if self.sudoku[fila][columna] != self.resuelto[fila][columna]:
-                        self.iluminar_celda(fila, columna, globals.ROJO)
+                        self.iluminar_celda(fila, columna, globals.AMARILLO)
                     else:
                         self.iluminar_celda(fila, columna, globals.VERDE)
-        self.dibujar_tablero()
+        self.dibujar_tablero_comprobado()
         pygame.display.update()
         # si está bien muestra un mensaje de enhorabuena
 
-    def dibujar_tablero(self):
+    def dibujar_tablero_comprobado(self):
+        print("dibujando tablero")
         for fila in range(9):
             for columna in range(9):
-                valor = self.sudoku[fila, columna]
+                valor = self.sudoku[fila][columna]
                 if valor != 0:
                     color = globals.NEGRO if valor > 0 else globals.ROJO
                     texto = pygame.font.Font(None, 36).render(str(abs(valor)), True, color)
@@ -319,8 +346,14 @@ class Tablero:
 
 
     def mostrar_solucion(self):
-        # Implementar lógica para mostrar la solución
-        pass
+        print("Mostrando la solución")
+        self.borrar_tablero()
+        for fila in range(9):
+            for columna in range(9):
+                self.sudoku[fila][columna] = self.resuelto[fila][columna]
+        self.imprimir_numeros()
+        self.imprimir_tablero()
+        pygame.display.update()
 
     def crear_sudoku(self, dificultad):
         # Implementar lógica para crear los sudokus
