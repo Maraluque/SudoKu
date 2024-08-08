@@ -14,7 +14,9 @@ class Utils:
         self.temporizador_iniciado = False
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
+        self.tiempo_pausa = 0
         self.tablero = Tablero(self.pantalla)
+        self.inicio_juego = True
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None):
         mouse = pygame.mouse.get_pos()
@@ -35,6 +37,7 @@ class Utils:
         en_menu = True
         celda_seleccionada = None
         cambio_en_tablero = True
+        
         while en_menu:
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -74,15 +77,23 @@ class Utils:
             hueco_x = globals.PANTALLA_ANCHO - 225  # Ajustar según el tamaño del hueco
             self.dibujar_boton("Iniciar", hueco_x, 50, 100, 50, globals.GRIS, globals.VERDE, self.iniciar_temporizador)
             self.dibujar_temporizador()
-            self.dibujar_boton("Detener", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.detener_temporizador)
+            if self.temporizador_iniciado or self.inicio_juego:
+                self.dibujar_boton("Pausar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador)
+            else:
+                self.dibujar_boton("Continuar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador)
             self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS, globals.AZUL, self.comprobar_solucion)
             self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS, globals.AMARILLO, self.tablero.mostrar_solucion)
             self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero)
             self.dibujar_boton("Salir", hueco_x, 290, 210, 50, globals.GRIS, globals.MORADO_CLARO, self.salir_juego)
 
+            self.actualizar_temporizador()
+            self.dibujar_temporizador()
+            
 
             pygame.display.flip()
             pygame.time.Clock().tick(60)
+
+            
             
 
     def comprobar_solucion(self):
@@ -97,22 +108,38 @@ class Utils:
         pygame.display.update()
 
     def dibujar_temporizador(self):
-        if self.temporizador_iniciado:
-            self.tiempo_actual = time.time() - self.tiempo_inicio
+        rect_temporizador = pygame.Rect(globals.PANTALLA_ANCHO - 170, 10, 100, 25)  # Ajusta la posición y tamaño según sea necesario
+        self.pantalla.fill((255, 255, 255), rect_temporizador)
         minutos = int(self.tiempo_actual // 60)
         segundos = int(self.tiempo_actual % 60)
-        tiempo_str = f"{minutos:02}:{segundos:02}"
-        texto = pygame.font.Font(None, 36).render(tiempo_str, True, globals.NEGRO)
+        tiempo_formateado = f"{minutos:02}:{segundos:02}"
+        fuente = pygame.font.Font(None, 36)
+        texto = pygame.font.Font(None, 36).render(tiempo_formateado, True, globals.NEGRO)
         self.pantalla.blit(texto, (globals.PANTALLA_ANCHO - 150, 10))
 
     def iniciar_temporizador(self):
-        if not self.temporizador_iniciado:
-            self.temporizador_iniciado = True
-            self.tiempo_inicio = time.time() - self.tiempo_actual
+        self.reiniciar_temporizador()
+        self.temporizador_iniciado = True
 
-    def detener_temporizador(self):
-        self.temporizador_iniciado = False
-        self.tiempo_actual = 0  # Poner el tiempo a cero
+    def pausar_temporizador(self):
+        self.inicio_juego= False
+        if self.temporizador_iniciado:
+            self.tiempo_pausa = time.time() - self.tiempo_inicio
+            self.temporizador_iniciado = False
+        else:
+            self.tiempo_inicio = time.time() - self.tiempo_pausa
+            self.temporizador_iniciado = True
+        time.sleep(0.1)
+
+    def reiniciar_temporizador(self):
+        self.tiempo_inicio = time.time()
+        self.tiempo_actual = 0
+        self.tiempo_pausa = 0
+
+    def actualizar_temporizador(self):
+        if self.temporizador_iniciado:
+            self.tiempo_actual = time.time() - self.tiempo_inicio
+
 
     def salir_juego(self):
         pygame.quit()
@@ -143,7 +170,6 @@ class Utils:
             globals.TAMAÑO_CELDA - grosor_linea + 2.5
         )
         pygame.draw.rect(self.pantalla, color, rect)
-
 
     def ver_tutorial(self):
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
