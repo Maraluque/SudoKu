@@ -6,7 +6,7 @@ import random
 import time
 
 class Utils:
-    def __init__(self, pantalla):
+    def __init__(self, pantalla, sudoku_instance):
         self.pantalla = pantalla
         self.boton_empezar = pygame.Rect(100, 100, 200, 50)
         self.boton_tutorial = pygame.Rect(100, 200, 200, 50)
@@ -16,8 +16,11 @@ class Utils:
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
         self.tiempo_pausa = 0
-        self.tablero = Tablero(self.pantalla)
+        self.sudoku_instance = sudoku_instance
+        sudoku, resuelto = sudoku_instance.crear_sudoku()
+        self.tablero = Tablero(self.pantalla, sudoku, resuelto)
         self.inicio_juego = True
+        
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None):
         mouse = pygame.mouse.get_pos()
@@ -141,7 +144,6 @@ class Utils:
         if self.temporizador_iniciado:
             self.tiempo_actual = time.time() - self.tiempo_inicio
 
-
     def salir_juego(self):
         pygame.quit()
         sys.exit()
@@ -229,84 +231,85 @@ class Sudoku:
     def __init__(self):
         self.sudoku = np.zeros((9, 9), dtype=int)
         self.posibles = [[[] for _ in range(9)] for _ in range(9)]
-        # self.calcular_posibles()
-        # self.poner_valores_unicos()
-        self.resolver_sudoku(True)
 
     def copiar(self, a_copiar):
         self.sudoku = np.copy(a_copiar.sudoku)
         
     def calcular_posibles(self, mostrar=False):
+        self.posibles = [[[] for _ in range(9)] for _ in range(9)]
         for fila in range(9):
             for columna in range(9):
                 if self.sudoku[fila][columna] == 0:
                     self.posibles[fila][columna] = [numero for numero in range(1, 10) if self.es_posible(fila, columna, numero)]
-        if mostrar:
-            # Imprimir los posibles
-            for fila in range(9):
-                for columna in range(9):
-                    if self.sudoku[fila][columna] == 0:
+                    if mostrar:
                         print(f"Posibles en [{fila}, {columna}]: {self.posibles[fila][columna]}")
-
+                        
     def poner_valores_unicos(self):
-        print(self.sudoku)
         # Poner valores únicos en las celdas con un solo posible
         for fila in range(9):
             for columna in range(9):
                 if len(self.posibles[fila][columna]) == 1:
                     print(f"Poniendo valor en [{fila}, {columna}]: {self.posibles[fila][columna][0]}")
                     self.sudoku[fila][columna] = self.posibles[fila][columna][0]
-        self.calcular_posibles(True)
-        print(self.sudoku)
+        self.calcular_posibles()
 
     def resolver_unicos(self):
+        cuantos = 0
         for fila in range(9):
             for columna in range(9):
                 if len(self.posibles[fila][columna]) == 1:
                     self.sudoku[fila][columna] = self.posibles[fila][columna][0]
+                    cuantos += 1
+        return cuantos
                 
     def resolver_sudoku(self, mostrar=False):
         self.calcular_posibles(mostrar)
         resolver = True
 
         while resolver:
-            self.resolver_unicos()
-            self.calcular_posibles(mostrar)
-            if self.sudoku.all() != 0:
-                resolver = False
-        
-        if mostrar:
-            print(self.sudoku)
+            resolver = (self.resolver_unicos() != 0)
+            if resolver:
+                self.calcular_posibles(mostrar)
+            
+        Resuelto = True
+        for fila in range(9):
+            for columna in range(9):
+                if self.sudoku[fila][columna] == 0:
+                    Resuelto = False
 
+        return Resuelto
+        
     def crear_sudoku(self):
+        self.calcular_posibles()
         self.intentar_poner_valor(0,0)
 
         casillas = []
 
         for fil in range(9):
             for col in range(9):
-                casillas.append_([f,c])
+                casillas.append([fil,col])
 
         random.shuffle(casillas)
+
+        resuelto = np.copy(self.sudoku)
 
         for [fila,columna] in casillas:
             s_aux = Sudoku()
             s_aux.copiar(self)
+            s_aux.sudoku[fila][columna] = 0
             if s_aux.resolver_sudoku():
                 self.sudoku[fila][columna] = 0
-                self.calcular_posibles(True)
-
-
+                self.calcular_posibles()
+        return self.sudoku, resuelto
 
     def intentar_poner_valor(self, fila, columna):
-        valores_posibles = [0,1,2,3,4,5,6,7,8]
+        valores_posibles = [1,2,3,4,5,6,7,8,9]
         random.shuffle(valores_posibles)
-        print(valores_posibles)
 
         for valor in valores_posibles:
             if valor in self.posibles[fila][columna]:
-                self.sudoku[fila][columna] = self.sudoku[fila][columna] + 1
-                self.calcular_posibles(True)
+                self.sudoku[fila][columna] = valor
+                self.calcular_posibles()
 
                 siguiente_fila = fila
                 siguiente_columna = columna + 1
@@ -319,7 +322,7 @@ class Sudoku:
                 if self.intentar_poner_valor(siguiente_fila, siguiente_columna):
                     return True
                 self.sudoku[fila][columna] = 0
-                self.calcular_posibles(True)
+                self.calcular_posibles()
         return False
         
     def es_posible(self, fila, columna, numero):
@@ -338,40 +341,12 @@ class Sudoku:
 
 
 class Tablero:
-    def __init__(self, pantalla):
-        # Crear tablero con números de ejemplo
-        self.sudoku = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
-                                [6, 0, 0, 1, 9, 5, 0, 0, 0],
-                                [0, 9, 8, 0, 0, 0, 0, 6, 0],
-                                [8, 0, 0, 0, 6, 0, 0, 0, 3],
-                                [4, 0, 0, 8, 0, 3, 0, 0, 1],
-                                [7, 0, 0, 0, 2, 0, 0, 0, 6],
-                                [0, 6, 0, 0, 0, 0, 2, 8, 0],
-                                [0, 0, 0, 4, 1, 9, 0, 0, 5],
-                                [0, 0, 0, 0, 8, 0, 0, 7, 9]])
-                                
-        self.resuelto = np.array([[5, 3, 4, 6, 7, 8, 9, 1, 2],
-                                [6, 7, 2, 1, 9, 5, 3, 4, 8],
-                                [1, 9, 8, 3, 4, 2, 5, 6, 7],
-                                [8, 5, 9, 7, 6, 1, 4, 2, 3],
-                                [4, 2, 6, 8, 5, 3, 7, 9, 1],
-                                [7, 1, 3, 9, 2, 4, 8, 5, 6],
-                                [9, 6, 1, 5, 3, 7, 2, 8, 4],
-                                [2, 8, 7, 4, 1, 9, 6, 3, 5],
-                                [3, 4, 5, 2, 8, 6, 1, 7, 9]])
-        self.inicial = np.array([[5, 3, 0, 0, 7, 0, 0, 0, 0],
-                                [6, 0, 0, 1, 9, 5, 0, 0, 0],
-                                [0, 9, 8, 0, 0, 0, 0, 6, 0],
-                                [8, 0, 0, 0, 6, 0, 0, 0, 3],
-                                [4, 0, 0, 8, 0, 3, 0, 0, 1],
-                                [7, 0, 0, 0, 2, 0, 0, 0, 6],
-                                [0, 6, 0, 0, 0, 0, 2, 8, 0],
-                                [0, 0, 0, 4, 1, 9, 0, 0, 5],
-                                [0, 0, 0, 0, 8, 0, 0, 7, 9]])
+    def __init__(self, pantalla, sudoku, resuelto):
+        self.sudoku = sudoku      
+        self.resuelto = resuelto
+        self.inicial = np.copy(self.sudoku)
         self.pantalla = pantalla
         
-       
-
     def set_valor(self, fila, columna, valor):
         if self.inicial[fila, columna] == 0:  # Solo permitir cambios en celdas que eran 0 inicialmente
             if self.es_posible(fila, columna, valor):
@@ -409,7 +384,6 @@ class Tablero:
         if numero in self.sudoku[inicio_fila:inicio_fila+3, inicio_columna:inicio_columna+3]:
             return False
         return True
-
         
     def imprimir_tablero(self):
         print("Imprimiendo tablero")
@@ -497,11 +471,11 @@ class Tablero:
     
 
 if __name__ == "__main__":
-    # pygame.init()
-    # pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
-    # pygame.display.set_caption("SUDOku")
-    # utils = Utils(pantalla)
-    # utils.mostrar_menu()
-
+    pygame.init()
+    pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+    pygame.display.set_caption("SUDOku")
     s = Sudoku()
-    s.crear_sudoku()
+    utils = Utils(pantalla, s)
+    utils.mostrar_menu()
+
+    
