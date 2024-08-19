@@ -16,10 +16,9 @@ class Utils:
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
         self.tiempo_pausa = 0
-        self.sudoku_instance = sudoku_instance
-        sudoku, resuelto = sudoku_instance.crear_sudoku()
-        self.tablero = Tablero(self.pantalla, sudoku, resuelto)
+        self.instancia_sudoku = sudoku_instance
         self.inicio_juego = True
+        self.dificultad = 0
         
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None):
@@ -36,18 +35,86 @@ class Utils:
         texto_rect = texto.get_rect(center=(x + ancho / 2, y + alto / 2))
         self.pantalla.blit(texto, texto_rect)
 
+    def mostrar_pantalla_carga(self):
+        # Cargar imágenes de la animación
+        frames = [pygame.image.load(f'frame{i}.png') for i in range(1, 6)]  # Asegúrate de tener frame1.png, frame2.png, etc.
+
+        screen.fill(globals.BLANCO)
+        for frame in frames:
+            screen.fill(globals.BLANCO)  # Limpiar la pantalla
+            screen.blit(frame, (300, 200))  # Dibujar el frame en el centro de la pantalla
+            pygame.display.flip()
+            time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
+
+    def seleccionar_dificultad(self):
+        seleccionando_dificultad = True
+
+        while seleccionando_dificultad:
+            self.pantalla.fill(globals.BLANCO)
+            easy_button = pygame.Rect(300, 150, 200, 50)
+            medium_button = pygame.Rect(300, 250, 200, 50)
+            hard_button = pygame.Rect(300, 350, 200, 50)
+
+            font = pygame.font.Font(None, 74)
+            button_font = pygame.font.Font(None, 36)
+
+
+            pygame.draw.rect(self.pantalla, globals.GRIS, easy_button)
+            pygame.draw.rect(self.pantalla, globals.GRIS, medium_button)
+            pygame.draw.rect(self.pantalla, globals.GRIS, hard_button)
+            
+            easy_text = button_font.render("Fácil", True, globals.NEGRO)
+            medium_text = button_font.render("Medio", True, globals.NEGRO)
+            hard_text = button_font.render("Difícil", True, globals.NEGRO)
+            
+            self.pantalla.blit(easy_text, (easy_button.x + 50, easy_button.y + 10))
+            self.pantalla.blit(medium_text, (medium_button.x + 50, medium_button.y + 10))
+            self.pantalla.blit(hard_text, (hard_button.x + 50, hard_button.y + 10))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if easy_button.collidepoint(event.pos):
+                        self.set_dificultad(0)
+                        seleccionando_dificultad = False
+                    elif medium_button.collidepoint(event.pos):
+                        self.set_dificultad(1)
+                        seleccionando_dificultad = False
+                    elif hard_button.collidepoint(event.pos):
+                        self.set_dificultad(2)
+                        seleccionando_dificultad = False
+
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+
+            if self.dificultad:
+                seleccionando_dificultad = False
+
+        return self.dificultad
+
+    def set_dificultad(self, dificultad):
+        self.dificultad = dificultad
 
     def empezar_juego(self):
-        en_menu = True
+        # pantalla de carga y selección de dificultad
+        self.dificultad = self.seleccionar_dificultad()
+        self.mostrar_pantalla_carga()
+
+        sudoku, resuelto = self.instancia_sudoku.crear_sudoku()
+        self.tablero = Tablero(self.pantalla, sudoku, resuelto)
+
+        en_juego = True
         celda_seleccionada = None
         cambio_en_tablero = True
         
-        while en_menu:
+        while en_juego:
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    en_menu = False
+                    en_juego = False
                 elif evento.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     columna = (pos[0] - globals.MARGEN) // globals.TAMAÑO_CELDA
@@ -90,15 +157,18 @@ class Utils:
             self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero)
             self.dibujar_boton("Salir", hueco_x, 290, 210, 50, globals.GRIS, globals.MORADO_CLARO, self.salir_juego)
 
+            # Dibujar dificultad
+            fuente = pygame.font.Font(None, 36)
+            texto_dificultad = fuente.render(f"Dificultad: {self.dificultad}", True, globals.NEGRO)
+
+            self.pantalla.blit(texto_dificultad, (globals.PANTALLA_ANCHO - 200, 450))
+
             self.actualizar_temporizador()
             self.dibujar_temporizador()
             
 
             pygame.display.flip()
             pygame.time.Clock().tick(60) # 60 FPS
-
-            
-            
 
     def comprobar_solucion(self):
         for fila in range(9):
@@ -228,7 +298,8 @@ class Utils:
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 class Sudoku:
-    def __init__(self):
+    def __init__(self, dificultad=0):
+        self.dificultad = dificultad
         self.sudoku = np.zeros((9, 9), dtype=int)
         self.posibles = [[[] for _ in range(9)] for _ in range(9)]
 
@@ -280,6 +351,7 @@ class Sudoku:
         return Resuelto
         
     def crear_sudoku(self):
+        # Dificultad 0: Fácil (por defecto), 1: Media, 2: Difícil
         self.calcular_posibles()
         self.intentar_poner_valor(0,0)
 
@@ -300,6 +372,13 @@ class Sudoku:
             if s_aux.resolver_sudoku():
                 self.sudoku[fila][columna] = 0
                 self.calcular_posibles()
+
+        # Elección de dificultad
+        if self.dificultad == 0:
+            for _ in range(7):
+                fila, columna = random.choice(casillas)
+                self.sudoku[fila][columna] = resuelto[fila][columna]
+
         return self.sudoku, resuelto
 
     def intentar_poner_valor(self, fila, columna):
@@ -386,14 +465,12 @@ class Tablero:
         return True
         
     def imprimir_tablero(self):
-        print("Imprimiendo tablero")
         for fila in range(10):
             grosor = 4 if fila % 3 == 0 else 1
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
 
     def imprimir_numeros(self, solucion=False):
-        print("Imprimiendo números")
         for fila in range(9):
             for columna in range(9):
                 if not solucion:
