@@ -37,12 +37,28 @@ class Utils:
 
     def mostrar_pantalla_carga(self):
         # Cargar imágenes de la animación
-        frames = [pygame.image.load(f'frame{i}.png') for i in range(1, 6)]  # Asegúrate de tener frame1.png, frame2.png, etc.
+        frames = [pygame.image.load(f'img/cargando{i}.png') for i in range(1, 12)]  # Asegúrate de tener frame1.png, frame2.png, etc.
 
-        screen.fill(globals.BLANCO)
+        
+        # Redimensionar los fotogramas
+        tamaño_nuevo = (50, 50)  # Tamaño deseado para los fotogramas
+        frames = [pygame.transform.scale(frame, tamaño_nuevo) for frame in frames]
+
+        # Calcular las coordenadas para centrar la animación
+        ancho_pantalla, alto_pantalla = self.pantalla.get_size()
+        x_centro = (ancho_pantalla - tamaño_nuevo[0]) // 2
+        y_centro = (alto_pantalla - tamaño_nuevo[1]) // 2
+
+        self.pantalla.fill(globals.BLANCO)
         for frame in frames:
-            screen.fill(globals.BLANCO)  # Limpiar la pantalla
-            screen.blit(frame, (300, 200))  # Dibujar el frame en el centro de la pantalla
+            self.pantalla.fill(globals.BLANCO)  # Limpiar la pantalla
+            self.pantalla.blit(frame, (x_centro, y_centro))  # Dibujar el frame en el centro de la pantalla
+            pygame.display.flip()
+            time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
+
+        for frame in frames:
+            self.pantalla.fill(globals.BLANCO)  # Limpiar la pantalla
+            self.pantalla.blit(frame, (x_centro, y_centro))  # Dibujar el frame en el centro de la pantalla
             pygame.display.flip()
             time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
 
