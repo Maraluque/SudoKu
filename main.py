@@ -13,6 +13,7 @@ class Utils:
         self.boton_info_creador = pygame.Rect(100, 300, 200, 50)
         self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
         self.temporizador_iniciado = False
+        self.seleccionando_dificultad = False
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
         self.tiempo_pausa = 0
@@ -21,19 +22,35 @@ class Utils:
         self.dificultad = 0
         
 
-    def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None):
+    def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None, logo=None):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if x + ancho > mouse[0] > x and y + alto > mouse[1] > y:
-            pygame.draw.rect(self.pantalla, color_activo, (x, y, ancho, alto))
-            if click[0] == 1 and accion:
+        rect = pygame.Rect(x, y, ancho, alto)
+
+        if rect.collidepoint(mouse):
+            pygame.draw.rect(self.pantalla, color_activo, rect, border_radius=globals.BORDER_RADIUS)
+            if click[0] == 1 and accion is not None:
                 accion()
         else:
-            pygame.draw.rect(self.pantalla, color_inactivo, (x, y, ancho, alto))
-        
-        texto = pygame.font.Font(None, 20).render(mensaje, True, globals.NEGRO)
-        texto_rect = texto.get_rect(center=(x + ancho / 2, y + alto / 2))
-        self.pantalla.blit(texto, texto_rect)
+            pygame.draw.rect(self.pantalla, color_inactivo, rect, border_radius=globals.BORDER_RADIUS)
+
+        # Añadir sombra
+        sombra_rect = rect.copy()
+        sombra_rect.topleft = (rect.topleft[0] + 5, rect.topleft[1] + 5)
+        pygame.draw.rect(self.pantalla, (50, 50, 50), sombra_rect, border_radius=globals.BORDER_RADIUS)
+
+        # Añadir logo centrado si se proporciona
+        if logo:
+            logo_rect = logo.get_rect(center=rect.center)
+            self.pantalla.blit(logo, logo_rect)
+        else:
+            # Añadir texto centrado
+            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
+            texto = fuente.render(mensaje, True, (255, 255, 255))
+            texto_rect = texto.get_rect(center=rect.center)
+            self.pantalla.blit(texto, texto_rect)
+
+        return rect
 
     def mostrar_pantalla_carga(self):
         # Cargar imágenes de la animación
@@ -56,62 +73,43 @@ class Utils:
             pygame.display.flip()
             time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
 
-        for frame in frames:
-            self.pantalla.fill(globals.BLANCO)  # Limpiar la pantalla
-            self.pantalla.blit(frame, (x_centro, y_centro))  # Dibujar el frame en el centro de la pantalla
-            pygame.display.flip()
-            time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
-
     def seleccionar_dificultad(self):
-        seleccionando_dificultad = True
+        self.seleccionando_dificultad = True
 
-        while seleccionando_dificultad:
+        while self.seleccionando_dificultad:
             self.pantalla.fill(globals.BLANCO)
-            easy_button = pygame.Rect(300, 150, 200, 50)
-            medium_button = pygame.Rect(300, 250, 200, 50)
-            hard_button = pygame.Rect(300, 350, 200, 50)
 
-            font = pygame.font.Font(None, 74)
-            button_font = pygame.font.Font(None, 36)
-
-
-            pygame.draw.rect(self.pantalla, globals.GRIS, easy_button)
-            pygame.draw.rect(self.pantalla, globals.GRIS, medium_button)
-            pygame.draw.rect(self.pantalla, globals.GRIS, hard_button)
-            
-            easy_text = button_font.render("Fácil", True, globals.NEGRO)
-            medium_text = button_font.render("Medio", True, globals.NEGRO)
-            hard_text = button_font.render("Difícil", True, globals.NEGRO)
-            
-            self.pantalla.blit(easy_text, (easy_button.x + 50, easy_button.y + 10))
-            self.pantalla.blit(medium_text, (medium_button.x + 50, medium_button.y + 10))
-            self.pantalla.blit(hard_text, (hard_button.x + 50, hard_button.y + 10))
+            boton_facil = self.dibujar_boton("Fácil", 300, 150, 200, 50, globals.GRIS, globals.VERDE)
+            boton_medio = self.dibujar_boton("Medio", 300, 250, 200, 50, globals.GRIS, globals.AMARILLO)
+            boton_dificil = self.dibujar_boton("Difícil", 300, 350, 200, 50, globals.GRIS, globals.ROJO)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if easy_button.collidepoint(event.pos):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    if boton_facil.collidepoint(mouse_pos):
                         self.set_dificultad(0)
-                        seleccionando_dificultad = False
-                    elif medium_button.collidepoint(event.pos):
+                        self.seleccionando_dificultad = False
+                    elif boton_medio.collidepoint(mouse_pos):
                         self.set_dificultad(1)
-                        seleccionando_dificultad = False
-                    elif hard_button.collidepoint(event.pos):
+                        self.seleccionando_dificultad = False
+                    elif boton_dificil.collidepoint(mouse_pos):
                         self.set_dificultad(2)
-                        seleccionando_dificultad = False
+                        self.seleccionando_dificultad = False
+                
 
             pygame.display.flip()
             pygame.time.Clock().tick(60) # 60 FPS
 
-            if self.dificultad:
-                seleccionando_dificultad = False
+            
 
         return self.dificultad
 
     def set_dificultad(self, dificultad):
         self.dificultad = dificultad
+        self.seleccionando_dificultad = False
 
     def empezar_juego(self):
         # pantalla de carga y selección de dificultad
@@ -161,20 +159,31 @@ class Utils:
                 cambio_en_tablero = False
 
             # Dibujar temporizador y botones
-            hueco_x = globals.PANTALLA_ANCHO - 225  # Ajustar según el tamaño del hueco
-            self.dibujar_boton("Iniciar", hueco_x, 50, 100, 50, globals.GRIS, globals.VERDE, self.iniciar_temporizador)
+            # Cargar imágenes
+            logo_pausa = pygame.image.load(globals.RUTA_IMG_PAUSAR)
+            logo_reanudar = pygame.image.load(globals.RUTA_IMG_INICIAR)
+            logo_borrar = pygame.image.load(globals.RUTA_IMG_BORRAR)
+
+            # Escalar imágenes al tamaño adecuado
+            logo_pausa = pygame.transform.scale(logo_pausa, (50, 50))
+            logo_reanudar = pygame.transform.scale(logo_reanudar, (50, 50))
+            logo_borrar = pygame.transform.scale(logo_borrar, (50, 50))
+
+            hueco_x = globals.PANTALLA_ANCHO - 225
+            self.dibujar_boton("Iniciar", hueco_x, 50, 100, 50, globals.GRIS, globals.VERDE, self.iniciar_temporizador, logo_reanudar)
             self.dibujar_temporizador()
             if self.temporizador_iniciado or self.inicio_juego:
-                self.dibujar_boton("Pausar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador)
+                self.dibujar_boton("Pausar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador, logo_pausa)
             else:
-                self.dibujar_boton("Continuar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador)
+                self.dibujar_boton("Continuar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador, logo_reanudar)
             self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS, globals.AZUL, self.comprobar_solucion)
             self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS, globals.AMARILLO, self.tablero.mostrar_solucion)
-            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero)
+            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero, logo_borrar)
             self.dibujar_boton("Salir", hueco_x, 290, 210, 50, globals.GRIS, globals.MORADO_CLARO, self.salir_juego)
 
+            #TODO: ELIMINAR ESTO
             # Dibujar dificultad
-            fuente = pygame.font.Font(None, 36)
+            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
             texto_dificultad = fuente.render(f"Dificultad: {self.dificultad}", True, globals.NEGRO)
 
             self.pantalla.blit(texto_dificultad, (globals.PANTALLA_ANCHO - 200, 450))
@@ -198,13 +207,12 @@ class Utils:
         pygame.display.update()
 
     def dibujar_temporizador(self):
-        rect_temporizador = pygame.Rect(globals.PANTALLA_ANCHO - 170, 10, 100, 25)  # Ajusta la posición y tamaño según sea necesario
+        rect_temporizador = pygame.Rect(globals.PANTALLA_ANCHO - 170, 10, 100, 25)
         self.pantalla.fill((255, 255, 255), rect_temporizador)
         minutos = int(self.tiempo_actual // 60)
         segundos = int(self.tiempo_actual % 60)
         tiempo_formateado = f"{minutos:02}:{segundos:02}"
-        fuente = pygame.font.Font(None, 36)
-        texto = pygame.font.Font(None, 36).render(tiempo_formateado, True, globals.NEGRO)
+        texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(tiempo_formateado, True, globals.NEGRO)
         self.pantalla.blit(texto, (globals.PANTALLA_ANCHO - 150, 10))
 
     def iniciar_temporizador(self):
@@ -276,7 +284,7 @@ class Utils:
         self.pantalla.fill(globals.BLANCO)
         self.pantalla.blit(mi_foto, (posicion_x, posicion_y))
     
-        fuente = pygame.font.Font(None, 24)
+        fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
         descripcion = fuente.render("Proyecto de Trabajo de Fin de Grado realizado por María de las Maravillas Luque Carmona", True, globals.NEGRO)
         descripcion_rect = descripcion.get_rect(center=(self.pantalla.get_width() / 2, 300))
         self.pantalla.blit(descripcion, descripcion_rect)
@@ -495,7 +503,7 @@ class Tablero:
                     valor = self.resuelto[fila, columna]
                 if valor != 0:
                     color = globals.NEGRO if valor > 0 else globals.ROJO
-                    texto = pygame.font.Font(None, 36).render(str(abs(valor)), True, color)
+                    texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
                     texto_rect = texto.get_rect(center=(
                         globals.MARGEN + columna * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2,
                         globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2
@@ -512,7 +520,7 @@ class Tablero:
         pygame.draw.rect(self.pantalla, color, rect)
         valor = self.sudoku[fila][columna]
         if valor != 0:
-            texto = pygame.font.Font(None, 36).render(str(valor), True, globals.NEGRO)
+            texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(str(valor), True, globals.NEGRO)
             texto_rect = texto.get_rect(center=(
                 globals.MARGEN + columna * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2,
                 globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2
@@ -539,7 +547,7 @@ class Tablero:
                 valor = self.sudoku[fila][columna]
                 if valor != 0:
                     color = globals.NEGRO if valor > 0 else globals.ROJO
-                    texto = pygame.font.Font(None, 36).render(str(abs(valor)), True, color)
+                    texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
                     texto_rect = texto.get_rect(center=(
                         globals.MARGEN + columna * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2,
                         globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2

@@ -1,10 +1,30 @@
+import os
+
+# Rutas
+directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+fuente = os.path.join(directorio_actual, "font", "roboto", "Roboto-Light.ttf")
+RUTA_IMG_PAUSAR = os.path.join(directorio_actual, "img", "pausar.png")
+RUTA_IMG_INICIAR = os.path.join(directorio_actual, "img", "empezar.png")
+RUTA_IMG_AJUSTES = os.path.join(directorio_actual, "img", "ajustes.png")
+RUTA_IMG_BORRAR = os.path.join(directorio_actual, "img", "borrar.png")
+RUTA_IMG_SONIDO = os.path.join(directorio_actual, "img", "sonido.png")
+RUTA_IMG_SILENCIO = os.path.join(directorio_actual, "img", "silencio.png")
+
+# Botones
+BORDER_RADIUS = 30
+TAM_FUENTE = 24
+
+# Tamaños
 PANTALLA_ANCHO = 800
 PANTALLA_ALTO = 600
 
 TAMAÑO_CELDA = 60
 MARGEN = 20
-ANCHO = MARGEN * 2 + TAMAÑO_CELDA * 9  # Ajustado para que dependa del tamaño de la celda y el margen
-ALTO = MARGEN * 2 + TAMAÑO_CELDA * 9  # Igual que ANCHO para mantener la proporción
+ANCHO = MARGEN * 2 + TAMAÑO_CELDA * 9
+ALTO = MARGEN * 2 + TAMAÑO_CELDA * 9
+
+# Colores
 COLOR_FONDO = (255, 255, 255)
 COLOR_LINEA = (0, 0, 0)
 
