@@ -8,9 +8,6 @@ import time
 class Utils:
     def __init__(self, pantalla, sudoku_instance):
         self.pantalla = pantalla
-        self.boton_empezar = pygame.Rect(100, 100, 200, 50)
-        self.boton_tutorial = pygame.Rect(100, 200, 200, 50)
-        self.boton_info_creador = pygame.Rect(100, 300, 200, 50)
         self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
         self.temporizador_iniciado = False
         self.seleccionando_dificultad = False
@@ -27,6 +24,11 @@ class Utils:
         click = pygame.mouse.get_pressed()
         rect = pygame.Rect(x, y, ancho, alto)
 
+        # Sombra
+        sombra_rect = rect.copy()
+        sombra_rect.topleft = (rect.topleft[0] + 5, rect.topleft[1] + 5)
+        pygame.draw.rect(self.pantalla, globals.GRIS, sombra_rect, border_radius=globals.BORDER_RADIUS)
+
         if rect.collidepoint(mouse):
             pygame.draw.rect(self.pantalla, color_activo, rect, border_radius=globals.BORDER_RADIUS)
             if click[0] == 1 and accion is not None:
@@ -34,21 +36,19 @@ class Utils:
         else:
             pygame.draw.rect(self.pantalla, color_inactivo, rect, border_radius=globals.BORDER_RADIUS)
 
-        # Añadir sombra
-        sombra_rect = rect.copy()
-        sombra_rect.topleft = (rect.topleft[0] + 5, rect.topleft[1] + 5)
-        pygame.draw.rect(self.pantalla, (50, 50, 50), sombra_rect, border_radius=globals.BORDER_RADIUS)
-
         # Añadir logo centrado si se proporciona
         if logo:
-            logo_rect = logo.get_rect(center=rect.center)
+            logo_rect = logo.get_rect()
+            logo_rect.center = rect.center
             self.pantalla.blit(logo, logo_rect)
         else:
             # Añadir texto centrado
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-            texto = fuente.render(mensaje, True, (255, 255, 255))
+            texto = fuente.render(mensaje, True, globals.BLANCO)
             texto_rect = texto.get_rect(center=rect.center)
             self.pantalla.blit(texto, texto_rect)
+
+        
 
         return rect
 
@@ -75,13 +75,18 @@ class Utils:
 
     def seleccionar_dificultad(self):
         self.seleccionando_dificultad = True
+        fondo = pygame.image.load(globals.RUTA_FONDO)
+        fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
 
         while self.seleccionando_dificultad:
             self.pantalla.fill(globals.BLANCO)
+            self.pantalla.blit(fondo, (0, 0))
 
-            boton_facil = self.dibujar_boton("Fácil", 300, 150, 200, 50, globals.GRIS, globals.VERDE)
-            boton_medio = self.dibujar_boton("Medio", 300, 250, 200, 50, globals.GRIS, globals.AMARILLO)
-            boton_dificil = self.dibujar_boton("Difícil", 300, 350, 200, 50, globals.GRIS, globals.ROJO)
+            boton_facil = self.dibujar_boton("Fácil", 550, 150, 200, 50, globals.GRIS_CLARO, globals.VERDE)
+            boton_medio = self.dibujar_boton("Medio", 550, 250, 200, 50, globals.GRIS_CLARO, globals.AMARILLO)
+            boton_dificil = self.dibujar_boton("Difícil", 550, 350, 200, 50, globals.GRIS_CLARO, globals.ROJO)
+
+            boton_volver = self.dibujar_boton("Volver al menú", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -90,14 +95,17 @@ class Utils:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
                     if boton_facil.collidepoint(mouse_pos):
+                        self.seleccionando_dificultad = False
                         self.set_dificultad(0)
-                        self.seleccionando_dificultad = False
                     elif boton_medio.collidepoint(mouse_pos):
+                        self.seleccionando_dificultad = False
                         self.set_dificultad(1)
-                        self.seleccionando_dificultad = False
                     elif boton_dificil.collidepoint(mouse_pos):
-                        self.set_dificultad(2)
                         self.seleccionando_dificultad = False
+                        self.set_dificultad(2)
+                    elif boton_volver.collidepoint(mouse_pos):
+                        self.seleccionando_dificultad = False
+                        self.mostrar_menu()
                 
 
             pygame.display.flip()
@@ -153,7 +161,7 @@ class Utils:
                     fila, columna = celda_seleccionada
                     self.iluminar_celdas(fila, columna)
                     self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)
-                
+
                 self.tablero.imprimir_numeros()
                 self.tablero.imprimir_tablero()
                 cambio_en_tablero = False
@@ -162,25 +170,23 @@ class Utils:
             # Cargar imágenes
             logo_pausa = pygame.image.load(globals.RUTA_IMG_PAUSAR)
             logo_reanudar = pygame.image.load(globals.RUTA_IMG_INICIAR)
-            logo_borrar = pygame.image.load(globals.RUTA_IMG_BORRAR)
 
             # Escalar imágenes al tamaño adecuado
             logo_pausa = pygame.transform.scale(logo_pausa, (50, 50))
             logo_reanudar = pygame.transform.scale(logo_reanudar, (50, 50))
-            logo_borrar = pygame.transform.scale(logo_borrar, (50, 50))
 
             hueco_x = globals.PANTALLA_ANCHO - 225
-            self.dibujar_boton("Iniciar", hueco_x, 50, 100, 50, globals.GRIS, globals.VERDE, self.iniciar_temporizador, logo_reanudar)
+            self.dibujar_boton("Iniciar", hueco_x + 30, 50, 60, 50, globals.GRIS_CLARO, globals.VERDE, self.iniciar_temporizador, logo_reanudar)
             self.dibujar_temporizador()
             if self.temporizador_iniciado or self.inicio_juego:
-                self.dibujar_boton("Pausar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador, logo_pausa)
+                self.dibujar_boton("Pausar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.ROJO, self.pausar_temporizador, logo_pausa)
             else:
-                self.dibujar_boton("Continuar", hueco_x + 110, 50, 100, 50, globals.GRIS, globals.ROJO, self.pausar_temporizador, logo_reanudar)
-            self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS, globals.AZUL, self.comprobar_solucion)
-            self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS, globals.AMARILLO, self.tablero.mostrar_solucion)
-            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS, globals.NARANJA, self.tablero.borrar_tablero, logo_borrar)
-            self.dibujar_boton("Salir", hueco_x, 290, 210, 50, globals.GRIS, globals.MORADO_CLARO, self.salir_juego)
-
+                self.dibujar_boton("Continuar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.ROJO, self.pausar_temporizador, logo_reanudar)
+            self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS_CLARO, globals.AZUL, self.comprobar_solucion)
+            self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS_CLARO, globals.AMARILLO, self.tablero.mostrar_solucion)
+            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS_CLARO, globals.NARANJA, self.tablero.borrar_tablero)
+            self.dibujar_boton("Salir", hueco_x, 500, 210, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.salir_juego)
+            
             #TODO: ELIMINAR ESTO
             # Dibujar dificultad
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
@@ -239,6 +245,7 @@ class Utils:
             self.tiempo_actual = time.time() - self.tiempo_inicio
 
     def salir_juego(self):
+        print("saliendo")
         pygame.quit()
         sys.exit()
 
@@ -299,26 +306,44 @@ class Utils:
 
     def mostrar_menu(self):
         en_menu = True
+        print("en menu")
+
+        fondo = pygame.image.load(globals.RUTA_FONDO)
+        fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+
         while en_menu:
+
+            self.pantalla.fill(globals.BLANCO)
+            
+            self.pantalla.blit(fondo, (0, 0))
+            
+            boton_empezar = self.dibujar_boton("Empezar", 550, 150, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.empezar_juego)
+            boton_tutorial = self.dibujar_boton("Tutorial", 550, 250, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_tutorial)
+            boton_info_creador = self.dibujar_boton("Info del Creador", 550, 350, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_info_creador)
+            boton_salir = self.dibujar_boton("Salir", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif evento.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    if self.boton_empezar.collidepoint(pos):
-                        en_menu = False
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_empezar.collidepoint(mouse_pos):
                         self.empezar_juego()
-                    elif self.boton_tutorial.collidepoint(pos):
+                        en_menu = False
+                    elif boton_tutorial.collidepoint(mouse_pos):
                         self.ver_tutorial()
-                    elif self.boton_info_creador.collidepoint(pos):
+                        en_menu = False
+                    elif boton_info_creador.collidepoint(mouse_pos):
                         self.ver_info_creador()
+                        en_menu = False
+                    elif boton_salir.collidepoint(mouse_pos):
+                        self.salir_juego()
+                        en_menu = False
 
-            self.pantalla.fill(globals.BLANCO)
-            self.dibujar_boton("Empezar", 100, 100, 200, 50, (200, 200, 200), (255, 0, 0), self.empezar_juego)
-            self.dibujar_boton("Tutorial", 100, 200, 200, 50, (200, 200, 200), (255, 0, 0))
-            self.dibujar_boton("Info del Creador", 100, 300, 200, 50, (200, 200, 200), (255, 0, 0))
+            
 
+            
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 class Sudoku:
