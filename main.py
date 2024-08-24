@@ -4,6 +4,8 @@ import numpy as np
 import globals
 import random
 import time
+import os
+import csv
 
 class Utils:
     def __init__(self, pantalla, sudoku_instance):
@@ -73,6 +75,98 @@ class Utils:
             pygame.display.flip()
             time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
 
+    def mostrar_puntuacion(self):
+        en_puntuacion = True
+
+        puntuaciones = []
+        with open(globals.ARCHIVO_PUNTUACION, mode='r', newline='') as archivo:
+            reader = csv.reader(archivo)
+            next(reader)  # Saltar la cabecera
+            for row in reader:
+                puntuaciones.append(row)
+        puntuaciones.sort(key=lambda x: (x[0], float(x[1])))
+
+        fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
+        fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+
+        while en_puntuacion:
+            self.pantalla.fill(globals.BLANCO)
+            self.pantalla.blit(fondo, (0, 0))
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_puntuacion = False
+                        self.mostrar_menu()
+
+
+            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE_PUNTUACION)
+            fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
+            fuente_titulo = pygame.font.Font(globals.fuente, globals.TAM_FUENTE + 10)
+            texto_titulo = fuente_titulo.render("Puntuaciones", True, globals.NEGRO)
+            texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 50))
+            self.pantalla.blit(texto_titulo, texto_titulo_rect)
+
+            fila = 100
+            # Cabecera de la tabla
+            texto_cabecera = fuente_columnas.render("Fácil", True, globals.NEGRO)
+            texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
+            self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
+
+            texto_cabecera = fuente_columnas.render("Media", True, globals.NEGRO)
+            texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
+            self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
+
+            texto_cabecera = fuente_columnas.render("Difícil", True, globals.NEGRO)
+            texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
+            self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
+
+            fila += 50
+
+            # Crear matriz para almacenar las puntuaciones
+            matriz_puntuaciones = [[None, None, None] for _ in range(7)]
+
+            # Mostrar las primeras 7 puntuaciones de cada dificultad
+            facil_count = 0
+            media_count = 0
+            dificil_count = 0
+            for puntuacion in puntuaciones:
+                if puntuacion[0] == "facil" and facil_count < 7:
+                    matriz_puntuaciones[facil_count][0] = str(round(float(puntuacion[1]), 4))
+                    facil_count += 1
+                elif puntuacion[0] == "media" and media_count < 7:
+                    matriz_puntuaciones[media_count][1] = str(round(float(puntuacion[1]), 4))
+                    media_count += 1
+                elif puntuacion[0] == "dificil" and dificil_count < 7:
+                    matriz_puntuaciones[dificil_count][2] = str(round(float(puntuacion[1]), 4))
+                    dificil_count += 1
+
+            # Mostrar la matriz en formato tabla
+            for i in range(7):
+                texto_puntuacion_facil = fuente.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
+                texto_puntuacion_media = fuente.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
+                texto_puntuacion_dificil = fuente.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
+
+                texto_puntuacion_facil_rect = texto_puntuacion_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
+                texto_puntuacion_media_rect = texto_puntuacion_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
+                texto_puntuacion_dificil_rect = texto_puntuacion_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
+
+                self.pantalla.blit(texto_puntuacion_facil, texto_puntuacion_facil_rect)
+                self.pantalla.blit(texto_puntuacion_media, texto_puntuacion_media_rect)
+                self.pantalla.blit(texto_puntuacion_dificil, texto_puntuacion_dificil_rect)
+
+                fila += 50
+
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+
+            
+
     def seleccionar_dificultad(self):
         self.seleccionando_dificultad = True
         fondo = pygame.image.load(globals.RUTA_FONDO)
@@ -106,6 +200,8 @@ class Utils:
                     elif boton_volver.collidepoint(mouse_pos):
                         self.seleccionando_dificultad = False
                         self.mostrar_menu()
+                    
+
                 
 
             pygame.display.flip()
@@ -251,12 +347,16 @@ class Utils:
             self.pantalla.blit(texto_dificultad, texto_dificultad_rect)
             self.pantalla.blit(texto_tiempo, texto_tiempo_rect)
 
-            # mostrar imagen de confeti a la izquierda abajo y a la derecha abajo del recuadro de enhorabuena
             confeti1_rect = confeti1.get_rect(bottomleft=(110,390))
             confeti2_rect = confeti2.get_rect(bottomleft=(430,390))
 
             self.pantalla.blit(confeti1, confeti1_rect)
             self.pantalla.blit(confeti2, confeti2_rect)
+
+            with open(globals.ARCHIVO_PUNTUACION, mode='a', newline='') as archivo:
+                writer = csv.writer(archivo)
+                writer.writerow([dificultad_texto.replace("á","a").replace("í","i"), self.tiempo_actual])
+
 
         pygame.display.update()
 
@@ -351,6 +451,10 @@ class Utils:
         pygame.time.wait(5000)  # Espera 5 segundos
         self.mostrar_menu()  # Regresa al menú principal
 
+    def ajustes(self):
+        # edición de los ajustes del juego
+        pass
+
     def mostrar_menu(self):
         en_menu = True
 
@@ -363,9 +467,11 @@ class Utils:
             
             self.pantalla.blit(fondo, (0, 0))
             
-            boton_empezar = self.dibujar_boton("Empezar", 550, 150, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.empezar_juego)
-            boton_tutorial = self.dibujar_boton("Tutorial", 550, 250, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_tutorial)
-            boton_info_creador = self.dibujar_boton("Info del Creador", 550, 350, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_info_creador)
+            boton_empezar = self.dibujar_boton("Empezar", 550, 50, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.empezar_juego)
+            boton_tutorial = self.dibujar_boton("Tutorial", 550, 130, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_tutorial)
+            boton_info_creador = self.dibujar_boton("Info del Creador", 550, 210, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_info_creador)
+            boton_ajustes = self.dibujar_boton("Ajustes", 550, 290, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ajustes)
+            boton_puntuacion = self.dibujar_boton("Puntuación", 550, 370, 200, 50, globals.GRIS_CLARO, globals.AZUL, self.mostrar_puntuacion)
             boton_salir = self.dibujar_boton("Salir", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
 
             for evento in pygame.event.get():
@@ -385,6 +491,12 @@ class Utils:
                         en_menu = False
                     elif boton_salir.collidepoint(mouse_pos):
                         self.salir_juego()
+                        en_menu = False
+                    elif boton_puntuacion.collidepoint(mouse_pos):
+                        self.seleccionando_dificultad = False
+                        self.mostrar_puntuacion()
+                    elif boton_ajustes.collidepoint(mouse_pos):
+                        self.ajustes()
                         en_menu = False
 
             
@@ -643,6 +755,15 @@ class Tablero:
     
 
 if __name__ == "__main__":
+    # crea el csv de puntuacion con tres columnas por dificultad, fácil medio y difícil
+    #comprueba si existe el archivo y si no existe lo crea
+    
+    if not os.path.exists(globals.ARCHIVO_PUNTUACION):
+        puntuacion = [['Dificultad', 'Puntuacion']]
+        with open(globals.ARCHIVO_PUNTUACION, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(puntuacion)
+
     pygame.init()
     pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
     pygame.display.set_caption("SUDOku")

@@ -10,7 +10,7 @@ Este proyecto es un juego de Sudoku desarrollado en Python con una interfaz grá
 
 ## Tecnologías Utilizadas
 - **Python:** Lenguaje de programación principal.
-- **Tkinter:** Biblioteca para la creación de interfaces gráficas en Python.
+- **Pygame:** Biblioteca para la creación de juegos en Python.
 
 ## Requisitos
 Para ejecutar este juego, necesitarás tener Python instalado en tu sistema. Puedes descargarlo desde [python.org](https://www.python.org/downloads/).
