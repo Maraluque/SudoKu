@@ -202,14 +202,62 @@ class Utils:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def comprobar_solucion(self):
+        completo = True
         for fila in range(9):
             for columna in range(9):
                 if self.tablero.sudoku[fila][columna] == self.tablero.resuelto[fila][columna]:
                     self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO)  # Celda correcta
                 else:
                     self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)  # Celda incorrecta
+                    completo = False
         self.tablero.imprimir_numeros()
         self.tablero.imprimir_tablero()
+
+        if completo:
+            self.pausar_temporizador()
+            confeti1 = pygame.image.load(globals.RUTA_IMG_CONFETI)
+            confeti2 = pygame.image.load(globals.RUTA_IMG_CONFETI2)
+            cortina_confeti = pygame.image.load(globals.RUTA_IMG_CORTINA_CONFETI)
+
+            confeti1 = pygame.transform.scale(confeti1, (60, 60))
+            confeti2 = pygame.transform.scale(confeti2, (60, 60))
+            cortina_confeti = pygame.transform.scale(cortina_confeti, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+
+            dificultad_texto = ["fácil", "media", "difícil"][self.dificultad]
+            mensaje = "¡Enhorabuena! Has completado el sudoku."
+            dificultad = f"Dificultad: {dificultad_texto}."
+            tiempo = f"Tiempo: {self.tiempo_actual:.2f} segundos."
+
+
+            rect_ventana = pygame.Rect(100, 200, 400, 200)
+            sombra_rect = pygame.Rect(rect_ventana.topleft[0] + 5, rect_ventana.topleft[1] + 5, rect_ventana.width, rect_ventana.height)
+
+            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE - 5)
+
+            texto_enhorabuena = fuente.render(mensaje, True, globals.NEGRO)
+            texto_dificultad = fuente.render(dificultad, True, globals.NEGRO)
+            texto_tiempo = fuente.render(tiempo, True, globals.NEGRO)
+
+            texto_enhorabuena_rect = texto_enhorabuena.get_rect(center=(rect_ventana.centerx, rect_ventana.centery - 30))
+            texto_dificultad_rect = texto_dificultad.get_rect(center=rect_ventana.center)
+            texto_tiempo_rect = texto_tiempo.get_rect(center=(rect_ventana.centerx, rect_ventana.centery + 30))
+            
+            self.pantalla.blit(cortina_confeti, (0, 0))
+
+            pygame.draw.rect(self.pantalla, globals.GRIS_CLARO, sombra_rect, border_radius=globals.BORDER_RADIUS)
+            pygame.draw.rect(self.pantalla, globals.MORADO_CLARO, rect_ventana, border_radius=globals.BORDER_RADIUS)
+
+            self.pantalla.blit(texto_enhorabuena, texto_enhorabuena_rect)
+            self.pantalla.blit(texto_dificultad, texto_dificultad_rect)
+            self.pantalla.blit(texto_tiempo, texto_tiempo_rect)
+
+            # mostrar imagen de confeti a la izquierda abajo y a la derecha abajo del recuadro de enhorabuena
+            confeti1_rect = confeti1.get_rect(bottomleft=(110,390))
+            confeti2_rect = confeti2.get_rect(bottomleft=(430,390))
+
+            self.pantalla.blit(confeti1, confeti1_rect)
+            self.pantalla.blit(confeti2, confeti2_rect)
+
         pygame.display.update()
 
     def dibujar_temporizador(self):
@@ -245,7 +293,6 @@ class Utils:
             self.tiempo_actual = time.time() - self.tiempo_inicio
 
     def salir_juego(self):
-        print("saliendo")
         pygame.quit()
         sys.exit()
 
@@ -306,7 +353,6 @@ class Utils:
 
     def mostrar_menu(self):
         en_menu = True
-        print("en menu")
 
         fondo = pygame.image.load(globals.RUTA_FONDO)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))

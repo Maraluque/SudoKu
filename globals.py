@@ -10,6 +10,9 @@ RUTA_IMG_AJUSTES = os.path.join(directorio_actual, "img", "ajustes.png")
 RUTA_IMG_SONIDO = os.path.join(directorio_actual, "img", "sonido.png")
 RUTA_IMG_SILENCIO = os.path.join(directorio_actual, "img", "silencio.png")
 RUTA_FONDO = os.path.join(directorio_actual, "img", "fondo.jpg")
+RUTA_IMG_CONFETI = os.path.join(directorio_actual, "img", "confeti.png")
+RUTA_IMG_CONFETI2 = os.path.join(directorio_actual, "img", "confeti2.png")
+RUTA_IMG_CORTINA_CONFETI = os.path.join(directorio_actual, "img", "cortina_confeti.png")
 
 # Botones
 BORDER_RADIUS = 30
