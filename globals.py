@@ -4,6 +4,7 @@ import os
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
 fuente = os.path.join(directorio_actual, "font", "roboto", "Roboto-Light.ttf")
+fuente_negrita = os.path.join(directorio_actual, "font", "roboto", "Roboto-Regular.ttf")
 RUTA_IMG_PAUSAR = os.path.join(directorio_actual, "img", "pausar.png")
 RUTA_IMG_INICIAR = os.path.join(directorio_actual, "img", "empezar.png")
 RUTA_IMG_AJUSTES = os.path.join(directorio_actual, "img", "ajustes.png")
@@ -15,6 +16,11 @@ RUTA_IMG_CONFETI = os.path.join(directorio_actual, "img", "confeti.png")
 RUTA_IMG_CONFETI2 = os.path.join(directorio_actual, "img", "confeti2.png")
 RUTA_IMG_CORTINA_CONFETI = os.path.join(directorio_actual, "img", "cortina_confeti.png")
 ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
+RUTA_LOGO = os.path.join(directorio_actual, "img", "logo.png")
+RUTA_MEDALLA_BRONCE = os.path.join(directorio_actual, "img", "bronce.png")
+RUTA_MEDALLA_PLATA = os.path.join(directorio_actual, "img", "plata.png")
+RUTA_MEDALLA_ORO = os.path.join(directorio_actual, "img", "oro.png")
+RUTA_FOTO = os.path.join(directorio_actual, "img", "foto_orla.jpeg")
 
 # Botones
 BORDER_RADIUS = 30

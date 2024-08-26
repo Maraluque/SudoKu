@@ -7,7 +7,7 @@ import time
 import os
 import csv
 
-class Utils:
+class Juego:
     def __init__(self, pantalla, sudoku_instance):
         self.pantalla = pantalla
         self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
@@ -89,6 +89,14 @@ class Utils:
         fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
 
+        medalla_bronce = pygame.image.load(globals.RUTA_MEDALLA_BRONCE)
+        medalla_plata = pygame.image.load(globals.RUTA_MEDALLA_PLATA)
+        medalla_oro = pygame.image.load(globals.RUTA_MEDALLA_ORO)
+
+        medalla_bronce = pygame.transform.scale(medalla_bronce, (40, 40))
+        medalla_plata = pygame.transform.scale(medalla_plata, (40, 40))
+        medalla_oro = pygame.transform.scale(medalla_oro, (40, 40))
+
         while en_puntuacion:
             self.pantalla.fill(globals.BLANCO)
             self.pantalla.blit(fondo, (0, 0))
@@ -108,23 +116,40 @@ class Utils:
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE_PUNTUACION)
             fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
             fuente_titulo = pygame.font.Font(globals.fuente, globals.TAM_FUENTE + 10)
-            texto_titulo = fuente_titulo.render("Puntuaciones", True, globals.NEGRO)
+            fuente_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE_PUNTUACION)
+            fuente_columnas_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE)
+            fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
+            texto_titulo = fuente_titulo_negrita.render("Puntuaciones", True, globals.NEGRO)
             texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 50))
             self.pantalla.blit(texto_titulo, texto_titulo_rect)
 
             fila = 100
             # Cabecera de la tabla
-            texto_cabecera = fuente_columnas.render("Fácil", True, globals.NEGRO)
+            texto_cabecera = fuente_columnas_negrita.render("Fácil", True, globals.NEGRO)
             texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
             self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
 
-            texto_cabecera = fuente_columnas.render("Media", True, globals.NEGRO)
+            texto_cabecera = fuente_columnas_negrita.render("Media", True, globals.NEGRO)
             texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
             self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
 
-            texto_cabecera = fuente_columnas.render("Difícil", True, globals.NEGRO)
+            texto_cabecera = fuente_columnas_negrita.render("Difícil", True, globals.NEGRO)
             texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
             self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
+
+            # Líneas separadoras
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 50, fila - 25), (globals.PANTALLA_ANCHO // 2 - 50, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 75), (globals.PANTALLA_ANCHO // 2 - 150, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 + 50, fila - 25), (globals.PANTALLA_ANCHO // 2 + 50, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 + 150, fila - 75), (globals.PANTALLA_ANCHO // 2 + 150, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 25), (globals.PANTALLA_ANCHO // 2 + 150, fila - 25), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 75), (globals.PANTALLA_ANCHO // 2 + 150, fila - 75), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila + 25), (globals.PANTALLA_ANCHO // 2 + 150, fila + 25), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila + 380), (globals.PANTALLA_ANCHO // 2 + 150, fila + 380), 2)
+
+            self.pantalla.blit(medalla_oro, (globals.PANTALLA_ANCHO // 2 - 200, 130))
+            self.pantalla.blit(medalla_plata, (globals.PANTALLA_ANCHO // 2 - 200, 180))
+            self.pantalla.blit(medalla_bronce, (globals.PANTALLA_ANCHO // 2 - 200, 230))
 
             fila += 50
 
@@ -148,9 +173,14 @@ class Utils:
 
             # Mostrar la matriz en formato tabla
             for i in range(7):
-                texto_puntuacion_facil = fuente.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
-                texto_puntuacion_media = fuente.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
-                texto_puntuacion_dificil = fuente.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
+                if i == 0:
+                    texto_puntuacion_facil = fuente_negrita.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
+                    texto_puntuacion_media = fuente_negrita.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
+                    texto_puntuacion_dificil = fuente_negrita.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
+                else:
+                    texto_puntuacion_facil = fuente.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
+                    texto_puntuacion_media = fuente.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
+                    texto_puntuacion_dificil = fuente.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
 
                 texto_puntuacion_facil_rect = texto_puntuacion_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
                 texto_puntuacion_media_rect = texto_puntuacion_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
@@ -426,8 +456,8 @@ class Utils:
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
 
     def ver_info_creador(self):
-        ruta = "foto_orla.jpeg"
-        mi_foto_original = pygame.image.load(ruta)  # Carga la foto
+        #TODO: ARREGLAR ESTO
+        mi_foto_original = pygame.image.load(globals.RUTA_FOTO)  # Carga la foto
         mi_foto = pygame.transform.scale(mi_foto_original, (130, 170))  # Redimensiona la foto
     
         margen_derecho = 10  # Margen derecho en píxeles
@@ -755,20 +785,19 @@ class Tablero:
     
 
 if __name__ == "__main__":
-    # crea el csv de puntuacion con tres columnas por dificultad, fácil medio y difícil
-    #comprueba si existe el archivo y si no existe lo crea
-    
     if not os.path.exists(globals.ARCHIVO_PUNTUACION):
         puntuacion = [['Dificultad', 'Puntuacion']]
         with open(globals.ARCHIVO_PUNTUACION, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(puntuacion)
 
+    logo = pygame.image.load(globals.RUTA_LOGO)
+
+    pygame.display.set_icon(logo)
+
     pygame.init()
     pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
     pygame.display.set_caption("SUDOku")
     s = Sudoku()
-    utils = Utils(pantalla, s)
-    utils.mostrar_menu()
-
-    
+    juego = Juego(pantalla, s)
+    juego.mostrar_menu()
