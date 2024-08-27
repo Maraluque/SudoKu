@@ -8,7 +8,7 @@ import os
 import csv
 
 class Juego:
-    def __init__(self, pantalla, sudoku_instance):
+    def __init__(self, pantalla, sudoku_instance, ajustes):
         self.pantalla = pantalla
         self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
         self.temporizador_iniciado = False
@@ -19,6 +19,7 @@ class Juego:
         self.instancia_sudoku = sudoku_instance
         self.inicio_juego = True
         self.dificultad = 0
+        self.config = ajustes
         
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None, logo=None):
@@ -114,7 +115,7 @@ class Juego:
 
 
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE_PUNTUACION)
-            fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
+            fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE - 4)
             fuente_titulo = pygame.font.Font(globals.fuente, globals.TAM_FUENTE + 10)
             fuente_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE_PUNTUACION)
             fuente_columnas_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE)
@@ -137,6 +138,10 @@ class Juego:
             texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
             self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
 
+            texto_media = fuente_columnas.render("Promedio", True, globals.NEGRO)
+            texto_media_rect = texto_media.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 200, fila + 356))
+            self.pantalla.blit(texto_media, texto_media_rect)
+
             # Líneas separadoras
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 50, fila - 25), (globals.PANTALLA_ANCHO // 2 - 50, fila + 380), 2)
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 75), (globals.PANTALLA_ANCHO // 2 - 150, fila + 380), 2)
@@ -145,7 +150,9 @@ class Juego:
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 25), (globals.PANTALLA_ANCHO // 2 + 150, fila - 25), 2)
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 75), (globals.PANTALLA_ANCHO // 2 + 150, fila - 75), 2)
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila + 25), (globals.PANTALLA_ANCHO // 2 + 150, fila + 25), 2)
-            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila + 380), (globals.PANTALLA_ANCHO // 2 + 150, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 250, fila + 380), (globals.PANTALLA_ANCHO // 2 + 150, fila + 380), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 250, fila + 380), (globals.PANTALLA_ANCHO // 2 - 250, fila + 330), 2)
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 250, fila + 330), (globals.PANTALLA_ANCHO // 2 + 150, fila + 330), 2)
 
             self.pantalla.blit(medalla_oro, (globals.PANTALLA_ANCHO // 2 - 200, 130))
             self.pantalla.blit(medalla_plata, (globals.PANTALLA_ANCHO // 2 - 200, 180))
@@ -172,30 +179,55 @@ class Juego:
                     dificil_count += 1
 
             # Mostrar la matriz en formato tabla
-            for i in range(7):
-                if i == 0:
-                    texto_puntuacion_facil = fuente_negrita.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
-                    texto_puntuacion_media = fuente_negrita.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
-                    texto_puntuacion_dificil = fuente_negrita.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
-                else:
-                    texto_puntuacion_facil = fuente.render(matriz_puntuaciones[i][0], True, globals.NEGRO)
-                    texto_puntuacion_media = fuente.render(matriz_puntuaciones[i][1], True, globals.NEGRO)
-                    texto_puntuacion_dificil = fuente.render(matriz_puntuaciones[i][2], True, globals.NEGRO)
+            for i in range(6):
+                if matriz_puntuaciones[i][0] is not None:
+                    if i == 0:
+                        texto_puntuacion_facil = fuente_negrita.render(str(matriz_puntuaciones[i][0]) + " s", True, globals.NEGRO)
+                    else:
+                        texto_puntuacion_facil = fuente.render(str(matriz_puntuaciones[i][0]) + " s", True, globals.NEGRO)
+                    texto_puntuacion_facil_rect = texto_puntuacion_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
+                    self.pantalla.blit(texto_puntuacion_facil, texto_puntuacion_facil_rect)
 
-                texto_puntuacion_facil_rect = texto_puntuacion_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
-                texto_puntuacion_media_rect = texto_puntuacion_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
-                texto_puntuacion_dificil_rect = texto_puntuacion_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
+                if matriz_puntuaciones[i][1] is not None:
+                    if i == 0:
+                        texto_puntuacion_media = fuente_negrita.render(str(matriz_puntuaciones[i][1]) + " s", True, globals.NEGRO)
+                    else:
+                        texto_puntuacion_media = fuente.render(str(matriz_puntuaciones[i][1]) + " s", True, globals.NEGRO)
+                    texto_puntuacion_media_rect = texto_puntuacion_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
+                    self.pantalla.blit(texto_puntuacion_media, texto_puntuacion_media_rect)
 
-                self.pantalla.blit(texto_puntuacion_facil, texto_puntuacion_facil_rect)
-                self.pantalla.blit(texto_puntuacion_media, texto_puntuacion_media_rect)
-                self.pantalla.blit(texto_puntuacion_dificil, texto_puntuacion_dificil_rect)
+                if matriz_puntuaciones[i][2] is not None:
+                    if i == 0:
+                        texto_puntuacion_dificil = fuente_negrita.render(str(matriz_puntuaciones[i][2]) + " s", True, globals.NEGRO)
+                    else:
+                        texto_puntuacion_dificil = fuente.render(str(matriz_puntuaciones[i][2]) + " s", True, globals.NEGRO)
+                    texto_puntuacion_dificil_rect = texto_puntuacion_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
+                    self.pantalla.blit(texto_puntuacion_dificil, texto_puntuacion_dificil_rect)
+
+                
 
                 fila += 50
+            
+            # Calcular promedio de cada tipo de dificultad
+            promedio_facil = sum(float(p[0]) for p in matriz_puntuaciones if p[0]) / facil_count
+            promedio_media = sum(float(p[1]) for p in matriz_puntuaciones if p[1]) / media_count
+            promedio_dificil = sum(float(p[2]) for p in matriz_puntuaciones if p[2]) / dificil_count
+
+            # Mostrar promedio en color gris claro
+            texto_promedio_facil = fuente.render(f"{round(promedio_facil, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_facil_rect = texto_promedio_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila + 7))
+            self.pantalla.blit(texto_promedio_facil, texto_promedio_facil_rect)
+
+            texto_promedio_media = fuente.render(f"{round(promedio_media, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_media_rect = texto_promedio_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila + 7))
+            self.pantalla.blit(texto_promedio_media, texto_promedio_media_rect)
+
+            texto_promedio_dificil = fuente.render(f"{round(promedio_dificil, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_dificil_rect = texto_promedio_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila + 7))
+            self.pantalla.blit(texto_promedio_dificil, texto_promedio_dificil_rect)
 
             pygame.display.flip()
             pygame.time.Clock().tick(60) # 60 FPS
-
-            
 
     def seleccionar_dificultad(self):
         self.seleccionando_dificultad = True
@@ -483,7 +515,66 @@ class Juego:
 
     def ajustes(self):
         # edición de los ajustes del juego
-        pass
+        en_ajustes = True
+        
+        fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
+        fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+        
+        fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
+        fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
+
+        print(self.config)
+
+        
+
+        while en_ajustes:
+            self.pantalla.fill(globals.BLANCO)
+            
+            self.pantalla.blit(fondo, (0, 0))
+    
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+    
+            texto_titulo = fuente_titulo_negrita.render("Ajustes", True, globals.NEGRO)
+            texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 50))
+            self.pantalla.blit(texto_titulo, texto_titulo_rect)
+
+            texto_modo_accesibilidad = fuente_columnas.render("Modo accesibilidad", True, globals.NEGRO)
+            texto_modo_accesibilidad_rect = texto_modo_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 150))
+            self.pantalla.blit(texto_modo_accesibilidad, texto_modo_accesibilidad_rect)
+
+            boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 200, 200, 50, globals.GRIS_CLARO, globals.VERDE)
+            boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 200, 200, 50, globals.GRIS_CLARO, globals.ROJO)
+
+            
+
+            estado_accesibilidad = "Activado" if self.config["accesibilidad"] else "Desactivado"
+            texto_estado_accesibilidad = fuente_columnas.render(f"Accesibilidad: {estado_accesibilidad}", True, globals.NEGRO)
+            texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 320))
+            self.pantalla.blit(texto_estado_accesibilidad, texto_estado_accesibilidad_rect)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if boton_volver.collidepoint(evento.pos):
+                        en_ajustes = False
+                        self.mostrar_menu()
+                    elif boton_activar.collidepoint(evento.pos):
+                        self.toggle_accesibilidad(accesible=True)
+                    elif boton_desactivar.collidepoint(evento.pos):
+                        self.toggle_accesibilidad(accesible=False)
+                    
+            
+    
+            pygame.display.flip()
+            pygame.time.Clock().tick(60)
+
+    def toggle_accesibilidad(self, accesible):
+        self.config["accesibilidad"]=accesible
+        print(self.config["accesibilidad"])
+        # modificar el archivo de configuración
 
     def mostrar_menu(self):
         en_menu = True
@@ -793,6 +884,20 @@ if __name__ == "__main__":
             writer = csv.writer(file)
             writer.writerows(puntuacion)
 
+    config = {}
+
+    if os.path.exists(globals.ARCHIVO_CONFIGURACION):
+        with open(globals.ARCHIVO_CONFIGURACION, mode='r') as archivo:
+            reader = csv.reader(archivo)
+            next(reader)
+            for row in reader:
+                config[row[0]] = row[1]
+    else:
+        with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
+            writer = csv.writer(archivo)
+            writer.writerow(["accesibilidad", False])
+            config["accesibilidad"] = False
+
     logo = pygame.image.load(globals.RUTA_LOGO)
 
     pygame.display.set_icon(logo)
@@ -801,5 +906,5 @@ if __name__ == "__main__":
     pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
     pygame.display.set_caption("SUDOku")
     s = Sudoku()
-    juego = Juego(pantalla, s)
+    juego = Juego(pantalla, s, config)
     juego.mostrar_menu()

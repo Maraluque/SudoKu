@@ -15,12 +15,16 @@ RUTA_FONDO_PUNTUACION = os.path.join(directorio_actual, "img", "fondo_puntuacion
 RUTA_IMG_CONFETI = os.path.join(directorio_actual, "img", "confeti.png")
 RUTA_IMG_CONFETI2 = os.path.join(directorio_actual, "img", "confeti2.png")
 RUTA_IMG_CORTINA_CONFETI = os.path.join(directorio_actual, "img", "cortina_confeti.png")
-ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
 RUTA_LOGO = os.path.join(directorio_actual, "img", "logo.png")
 RUTA_MEDALLA_BRONCE = os.path.join(directorio_actual, "img", "bronce.png")
 RUTA_MEDALLA_PLATA = os.path.join(directorio_actual, "img", "plata.png")
 RUTA_MEDALLA_ORO = os.path.join(directorio_actual, "img", "oro.png")
 RUTA_FOTO = os.path.join(directorio_actual, "img", "foto_orla.jpeg")
+RUTA_BOTON_ON = os.path.join(directorio_actual, "img", "on.png")
+RUTA_BOTON_OFF = os.path.join(directorio_actual, "img", "off.png")
+
+ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
+ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")
 
 # Botones
 BORDER_RADIUS = 30
