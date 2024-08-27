@@ -455,7 +455,7 @@ class Juego:
     def ver_tutorial(self):
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
 
-    def ver_info_creador(self):
+    def ver_creditos(self):
         #TODO: ARREGLAR ESTO
         mi_foto_original = pygame.image.load(globals.RUTA_FOTO)  # Carga la foto
         mi_foto = pygame.transform.scale(mi_foto_original, (130, 170))  # Redimensiona la foto
@@ -499,7 +499,7 @@ class Juego:
             
             boton_empezar = self.dibujar_boton("Empezar", 550, 50, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.empezar_juego)
             boton_tutorial = self.dibujar_boton("Tutorial", 550, 130, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_tutorial)
-            boton_info_creador = self.dibujar_boton("Info del Creador", 550, 210, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_info_creador)
+            boton_creditos = self.dibujar_boton("Créditos", 550, 210, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_creditos)
             boton_ajustes = self.dibujar_boton("Ajustes", 550, 290, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ajustes)
             boton_puntuacion = self.dibujar_boton("Puntuación", 550, 370, 200, 50, globals.GRIS_CLARO, globals.AZUL, self.mostrar_puntuacion)
             boton_salir = self.dibujar_boton("Salir", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
@@ -516,8 +516,8 @@ class Juego:
                     elif boton_tutorial.collidepoint(mouse_pos):
                         self.ver_tutorial()
                         en_menu = False
-                    elif boton_info_creador.collidepoint(mouse_pos):
-                        self.ver_info_creador()
+                    elif boton_creditos.collidepoint(mouse_pos):
+                        self.ver_creditos()
                         en_menu = False
                     elif boton_salir.collidepoint(mouse_pos):
                         self.salir_juego()
@@ -643,10 +643,10 @@ class Sudoku:
         
     def es_posible(self, fila, columna, numero):
         # Verificar fila
-        if numero in self.sudoku[fila]:
+        if numero in self.sudoku[fila] and columna != self.sudoku[fila].tolist().index(numero):
             return False
         # Verificar columna
-        if numero in [fila[columna] for fila in self.sudoku]:
+        if numero in [fila[columna] for fila in self.sudoku] and fila != [fila[columna] for fila in self.sudoku].index(numero):
             return False
         # Verificar cuadrado 3x3
         inicio_fila = (fila // 3) * 3
@@ -665,7 +665,9 @@ class Tablero:
         
     def set_valor(self, fila, columna, valor):
         if self.inicial[fila, columna] == 0:  # Solo permitir cambios en celdas que eran 0 inicialmente
-            if self.es_posible(fila, columna, valor):
+            if self.sudoku[fila][columna] == valor:
+                return
+            elif self.es_posible(fila, columna, valor):
                 self.sudoku[fila][columna] = valor
             else:
                 self.sudoku[fila][columna] = -valor
