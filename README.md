@@ -6,7 +6,7 @@ Este proyecto es un juego de Sudoku desarrollado en Python con una interfaz grá
 - **Varios niveles de dificultad:** Fácil, Medio, Difícil.
 - **Interfaz gráfica atractiva:** Una interfaz limpia y fácil de usar.
 - **Solucionador de Sudoku:** Funcionalidad para resolver automáticamente el Sudoku.
-- **Guardado y carga de partidas:** Posibilidad de guardar tu progreso y cargarlo más tarde.
+- **Accesibilidad:** Para que el juego sea jugable por todo el mundo.
 
 ## Tecnologías Utilizadas
 - **Python:** Lenguaje de programación principal.
@@ -27,7 +27,7 @@ python -m pip install -r requirements.txt python main.py
 ```
 
 ## Cómo Jugar
-Al iniciar el juego, selecciona el nivel de dificultad que prefieras. El juego comenzará inmediatamente después de tu selección. Puedes hacer clic en cualquier celda para seleccionarla y luego ingresar un número del 1 al 9. Si te atascas, puedes usar la función de solución automática para completar el Sudoku.
+Al iniciar el juego, selecciona el nivel de dificultad que prefieras. El juego comenzará después de tu selección. Puedes hacer clic en cualquier celda para seleccionarla y luego ingresar un número del 1 al 9. Si te atascas, puedes usar la función de solución automática para completar el Sudoku.
 
 ## Contribuir
 Si deseas contribuir a este proyecto, por favor, primero discute el cambio que deseas realizar a través de issues antes de hacer un pull request.
