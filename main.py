@@ -169,60 +169,58 @@ class Juego:
             dificil_count = 0
             for puntuacion in puntuaciones:
                 if puntuacion[0] == "facil" and facil_count < 7:
-                    matriz_puntuaciones[facil_count][0] = str(round(float(puntuacion[1]), 4))
+                    matriz_puntuaciones[facil_count][0] = str(round(float(puntuacion[1]) / 60, 2)) + " m"
                     facil_count += 1
                 elif puntuacion[0] == "media" and media_count < 7:
-                    matriz_puntuaciones[media_count][1] = str(round(float(puntuacion[1]), 4))
+                    matriz_puntuaciones[media_count][1] = str(round(float(puntuacion[1]) / 60, 2)) + " m"
                     media_count += 1
                 elif puntuacion[0] == "dificil" and dificil_count < 7:
-                    matriz_puntuaciones[dificil_count][2] = str(round(float(puntuacion[1]), 4))
+                    matriz_puntuaciones[dificil_count][2] = str(round(float(puntuacion[1]) / 60, 2)) + " m"
                     dificil_count += 1
 
             # Mostrar la matriz en formato tabla
             for i in range(6):
                 if matriz_puntuaciones[i][0] is not None:
                     if i == 0:
-                        texto_puntuacion_facil = fuente_negrita.render(str(matriz_puntuaciones[i][0]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_facil = fuente_negrita.render(str(matriz_puntuaciones[i][0]), True, globals.NEGRO)
                     else:
-                        texto_puntuacion_facil = fuente.render(str(matriz_puntuaciones[i][0]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_facil = fuente.render(str(matriz_puntuaciones[i][0]), True, globals.NEGRO)
                     texto_puntuacion_facil_rect = texto_puntuacion_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
                     self.pantalla.blit(texto_puntuacion_facil, texto_puntuacion_facil_rect)
 
                 if matriz_puntuaciones[i][1] is not None:
                     if i == 0:
-                        texto_puntuacion_media = fuente_negrita.render(str(matriz_puntuaciones[i][1]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_media = fuente_negrita.render(str(matriz_puntuaciones[i][1]), True, globals.NEGRO)
                     else:
-                        texto_puntuacion_media = fuente.render(str(matriz_puntuaciones[i][1]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_media = fuente.render(str(matriz_puntuaciones[i][1]), True, globals.NEGRO)
                     texto_puntuacion_media_rect = texto_puntuacion_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila))
                     self.pantalla.blit(texto_puntuacion_media, texto_puntuacion_media_rect)
 
                 if matriz_puntuaciones[i][2] is not None:
                     if i == 0:
-                        texto_puntuacion_dificil = fuente_negrita.render(str(matriz_puntuaciones[i][2]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_dificil = fuente_negrita.render(str(matriz_puntuaciones[i][2]), True, globals.NEGRO)
                     else:
-                        texto_puntuacion_dificil = fuente.render(str(matriz_puntuaciones[i][2]) + " s", True, globals.NEGRO)
+                        texto_puntuacion_dificil = fuente.render(str(matriz_puntuaciones[i][2]), True, globals.NEGRO)
                     texto_puntuacion_dificil_rect = texto_puntuacion_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila))
                     self.pantalla.blit(texto_puntuacion_dificil, texto_puntuacion_dificil_rect)
-
-                
 
                 fila += 50
             
             # Calcular promedio de cada tipo de dificultad
-            promedio_facil = sum(float(p[0]) for p in matriz_puntuaciones if p[0]) / facil_count
-            promedio_media = sum(float(p[1]) for p in matriz_puntuaciones if p[1]) / media_count
-            promedio_dificil = sum(float(p[2]) for p in matriz_puntuaciones if p[2]) / dificil_count
+            promedio_facil = sum(float(p[0].split(" ")[0]) for p in matriz_puntuaciones if p[0]) / facil_count
+            promedio_media = sum(float(p[1].split(" ")[0]) for p in matriz_puntuaciones if p[1]) / media_count
+            promedio_dificil = sum(float(p[2].split(" ")[0]) for p in matriz_puntuaciones if p[2]) / dificil_count
 
             # Mostrar promedio en color gris claro
-            texto_promedio_facil = fuente.render(f"{round(promedio_facil, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_facil = fuente.render(f"{round(promedio_facil, 2)} m", True, globals.GRIS_CLARO)
             texto_promedio_facil_rect = texto_promedio_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila + 7))
             self.pantalla.blit(texto_promedio_facil, texto_promedio_facil_rect)
 
-            texto_promedio_media = fuente.render(f"{round(promedio_media, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_media = fuente.render(f"{round(promedio_media, 2)} m", True, globals.GRIS_CLARO)
             texto_promedio_media_rect = texto_promedio_media.get_rect(center=(globals.PANTALLA_ANCHO // 2, fila + 7))
             self.pantalla.blit(texto_promedio_media, texto_promedio_media_rect)
 
-            texto_promedio_dificil = fuente.render(f"{round(promedio_dificil, 4)} s", True, globals.GRIS_CLARO)
+            texto_promedio_dificil = fuente.render(f"{round(promedio_dificil, 2)} m", True, globals.GRIS_CLARO)
             texto_promedio_dificil_rect = texto_promedio_dificil.get_rect(center=(globals.PANTALLA_ANCHO // 2 + 100, fila + 7))
             self.pantalla.blit(texto_promedio_dificil, texto_promedio_dificil_rect)
 
@@ -281,9 +279,10 @@ class Juego:
         # pantalla de carga y selección de dificultad
         self.dificultad = self.seleccionar_dificultad()
         self.mostrar_pantalla_carga()
-
+        self.instancia_sudoku.set_dificultad(self.dificultad)
         sudoku, resuelto = self.instancia_sudoku.crear_sudoku()
         self.tablero = Tablero(self.pantalla, sudoku, resuelto)
+        self.iniciar_temporizador()
 
         en_juego = True
         celda_seleccionada = None
@@ -301,6 +300,9 @@ class Juego:
                     fila = (pos[1] - globals.MARGEN) // globals.TAMAÑO_CELDA
                     if 0 <= columna < 9 and 0 <= fila < 9:
                         celda_seleccionada = (fila, columna)
+                        cambio_en_tablero = True
+                    else:
+                        celda_seleccionada = None
                         cambio_en_tablero = True
                 elif evento.type == pygame.KEYDOWN and celda_seleccionada:
                     if evento.unicode.isdigit() and evento.unicode != '0':
@@ -344,13 +346,6 @@ class Juego:
             self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS_CLARO, globals.AMARILLO, self.tablero.mostrar_solucion)
             self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS_CLARO, globals.NARANJA, self.tablero.borrar_tablero)
             self.dibujar_boton("Salir", hueco_x, 500, 210, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.salir_juego)
-            
-            #TODO: ELIMINAR ESTO
-            # Dibujar dificultad
-            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-            texto_dificultad = fuente.render(f"Dificultad: {self.dificultad}", True, globals.NEGRO)
-
-            self.pantalla.blit(texto_dificultad, (globals.PANTALLA_ANCHO - 200, 450))
 
             self.actualizar_temporizador()
             self.dibujar_temporizador()
@@ -384,7 +379,9 @@ class Juego:
             dificultad_texto = ["fácil", "media", "difícil"][self.dificultad]
             mensaje = "¡Enhorabuena! Has completado el sudoku."
             dificultad = f"Dificultad: {dificultad_texto}."
-            tiempo = f"Tiempo: {self.tiempo_actual:.2f} segundos."
+            minutos = int(self.tiempo_actual // 60)
+            segundos = int(self.tiempo_actual % 60)
+            tiempo = f"Tiempo: {minutos} minutos {segundos} segundos."
 
 
             rect_ventana = pygame.Rect(100, 200, 400, 200)
@@ -488,7 +485,8 @@ class Juego:
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
 
     def ver_creditos(self):
-        #TODO: ARREGLAR ESTO
+        #TODO COMPLETAR
+        en_creditos = True
         mi_foto_original = pygame.image.load(globals.RUTA_FOTO)  # Carga la foto
         mi_foto = pygame.transform.scale(mi_foto_original, (130, 170))  # Redimensiona la foto
     
@@ -496,22 +494,33 @@ class Juego:
         margen_superior = 10  # Margen superior en píxeles
         posicion_x = self.pantalla.get_width() - mi_foto.get_width() - margen_derecho
         posicion_y = margen_superior
-    
-        self.pantalla.fill(globals.BLANCO)
-        self.pantalla.blit(mi_foto, (posicion_x, posicion_y))
-    
-        fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-        descripcion = fuente.render("Proyecto de Trabajo de Fin de Grado realizado por María de las Maravillas Luque Carmona", True, globals.NEGRO)
-        descripcion_rect = descripcion.get_rect(center=(self.pantalla.get_width() / 2, 300))
-        self.pantalla.blit(descripcion, descripcion_rect)
-    
-        contacto = fuente.render("Contacto: mmlc0007@red.ujaen.es", True, globals.NEGRO)
-        contacto_rect = contacto.get_rect(center=(self.pantalla.get_width() / 2, 350))
-        self.pantalla.blit(contacto, contacto_rect)
-    
-        pygame.display.flip()
-        pygame.time.wait(5000)  # Espera 5 segundos
-        self.mostrar_menu()  # Regresa al menú principal
+
+        while en_creditos:
+            
+            self.pantalla.fill(globals.BLANCO)
+            self.pantalla.blit(mi_foto, (posicion_x, posicion_y))
+        
+            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
+            descripcion = fuente.render("Proyecto de Trabajo de Fin de Grado realizado por María de las Maravillas Luque Carmona", True, globals.NEGRO)
+            descripcion_rect = descripcion.get_rect(center=(self.pantalla.get_width() / 2, 300))
+            self.pantalla.blit(descripcion, descripcion_rect)
+        
+            contacto = fuente.render("Contacto: mmlc0007@red.ujaen.es", True, globals.NEGRO)
+            contacto_rect = contacto.get_rect(center=(self.pantalla.get_width() / 2, 350))
+            self.pantalla.blit(contacto, contacto_rect)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if boton_volver.collidepoint(evento.pos):
+                        en_creditos = False
+                        self.mostrar_menu()
+        
+            pygame.display.flip()
 
     def ajustes(self):
         # edición de los ajustes del juego
@@ -522,10 +531,6 @@ class Juego:
         
         fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
         fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
-
-        print(self.config)
-
-        
 
         while en_ajustes:
             self.pantalla.fill(globals.BLANCO)
@@ -546,7 +551,6 @@ class Juego:
             boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 200, 200, 50, globals.GRIS_CLARO, globals.ROJO)
 
             
-
             estado_accesibilidad = "Activado" if self.config["accesibilidad"] else "Desactivado"
             texto_estado_accesibilidad = fuente_columnas.render(f"Accesibilidad: {estado_accesibilidad}", True, globals.NEGRO)
             texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 320))
@@ -626,8 +630,8 @@ class Juego:
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 class Sudoku:
-    def __init__(self, dificultad=0):
-        self.dificultad = dificultad
+    def __init__(self):
+        self.dificultad = 0
         self.sudoku = np.zeros((9, 9), dtype=int)
         self.posibles = [[[] for _ in range(9)] for _ in range(9)]
 
@@ -692,6 +696,9 @@ class Sudoku:
         random.shuffle(casillas)
 
         resuelto = np.copy(self.sudoku)
+        
+        max_backtracking = 2
+        backtracking = 0
 
         for [fila,columna] in casillas:
             s_aux = Sudoku()
@@ -701,12 +708,26 @@ class Sudoku:
                 self.sudoku[fila][columna] = 0
                 self.calcular_posibles()
 
+        # if self.dificultad == 2: # Verificar que el sudoku tenga al menos 16 pistas
+        #     for [fila,columna] in casillas:
+        #         if s_aux.backtracking(fila, columna) and backtracking <= max_backtracking and np.count_nonzero(self.sudoku) >= 16:
+        #             self.sudoku[fila][columna] = 0
+        #             print("Backtracking en [{}, {}]".format(fila, columna))
+        #             self.calcular_posibles()
+        #             backtracking += 1
+        
         # Elección de dificultad
         if self.dificultad == 0:
             for _ in range(7):
                 fila, columna = random.choice(casillas)
-                self.sudoku[fila][columna] = resuelto[fila][columna]
-
+                if self.sudoku[fila][columna] == 0:
+                    self.sudoku[fila][columna] = resuelto[fila][columna]
+        elif self.dificultad == 2:
+            for _ in range(5):
+                fila, columna = random.choice(casillas)
+                if self.sudoku[fila][columna] != 0:
+                    self.sudoku[fila][columna] = 0
+        print("Número de pistas:", np.count_nonzero(self.sudoku))
         return self.sudoku, resuelto
 
     def intentar_poner_valor(self, fila, columna):
@@ -745,6 +766,34 @@ class Sudoku:
         if numero in self.sudoku[inicio_fila:inicio_fila+3, inicio_columna:inicio_columna+3]:
             return False
         return True
+    
+    def backtracking(self, fila, columna):
+        if fila == 9:
+            return True
+        
+        if self.sudoku[fila][columna] != 0:
+            if columna == 8:
+                return self.backtracking(fila + 1, 0)
+            else:
+                return self.backtracking(fila, columna + 1)
+        
+        for num in range(1, 10):
+            if self.es_posible(fila, columna, num):
+                self.sudoku[fila][columna] = num
+                
+                if columna == 8:
+                    if self.backtracking(fila + 1, 0):
+                        return True
+                else:
+                    if self.backtracking(fila, columna + 1):
+                        return True
+                
+                self.sudoku[fila][columna] = 0
+        
+        return False
+    
+    def set_dificultad(self, dificultad):
+        self.dificultad = dificultad
 
 
 class Tablero:
@@ -809,7 +858,10 @@ class Tablero:
                     valor = self.resuelto[fila, columna]
                 if valor != 0:
                     color = globals.NEGRO if valor > 0 else globals.ROJO
-                    texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
+                    if self.inicial[fila][columna] == valor:
+                        texto = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
+                    else:
+                        texto = pygame.font.Font(globals.fuente, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
                     texto_rect = texto.get_rect(center=(
                         globals.MARGEN + columna * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2,
                         globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2
@@ -908,3 +960,33 @@ if __name__ == "__main__":
     s = Sudoku()
     juego = Juego(pantalla, s, config)
     juego.mostrar_menu()
+
+    #TODO QUITAR PRUEBAS DIFICULTAD 
+    # s = Sudoku()
+    # s.set_dificultad(2)
+    # LISTA_SUDOKUS = []
+    # for _ in range(10):
+        
+    #     LISTA_SUDOKUS.append(s.sudoku)
+
+    # # resolver con los dos métodos, imprimir el resultado
+    # clas = 0
+    # back = 0
+    # for i in range(100):
+    #     sudoku, resuelto = s.crear_sudoku()
+    #     clasico = s.resolver_sudoku()
+    #     backtracking = s.backtracking(0, 0)
+    #     if clasico:
+    #         clas += 1
+    #     if backtracking:
+    #         back += 1
+    #     print(f"Sudoku {i+1}")
+    #     print("Clásico: ", clasico)
+    #     print("Backtracking: ", backtracking)
+    #     print("====================================")
+
+    # print("Clásico: ", clas)
+    # print("Backtracking: ", back)
+    # print("====================================")
+    # print("El clasico resuelve el ", clas/100*100, "% de los sudokus")
+    # print("El backtracking resuelve el ", back/100*100, "% de los sudokus")
