@@ -280,7 +280,7 @@ class Juego:
         self.dificultad = self.seleccionar_dificultad()
         self.mostrar_pantalla_carga()
         self.instancia_sudoku.set_dificultad(self.dificultad)
-        sudoku, resuelto = self.instancia_sudoku.crear_sudoku()
+        sudoku, resuelto = self.instancia_sudoku.crear_sudoku(self.config)
         self.tablero = Tablero(self.pantalla, sudoku, resuelto)
         self.iniciar_temporizador()
 
@@ -537,24 +537,43 @@ class Juego:
             
             self.pantalla.blit(fondo, (0, 0))
     
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
     
             texto_titulo = fuente_titulo_negrita.render("Ajustes", True, globals.NEGRO)
-            texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 50))
+            texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 40))
             self.pantalla.blit(texto_titulo, texto_titulo_rect)
 
+            # Configuración de accesibilidad
             texto_modo_accesibilidad = fuente_columnas.render("Modo accesibilidad", True, globals.NEGRO)
-            texto_modo_accesibilidad_rect = texto_modo_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 150))
+            texto_modo_accesibilidad_rect = texto_modo_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 140))
             self.pantalla.blit(texto_modo_accesibilidad, texto_modo_accesibilidad_rect)
 
-            boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 200, 200, 50, globals.GRIS_CLARO, globals.VERDE)
-            boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 200, 200, 50, globals.GRIS_CLARO, globals.ROJO)
+            boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.VERDE)
+            boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.ROJO)
 
-            
             estado_accesibilidad = "Activado" if self.config["accesibilidad"] else "Desactivado"
             texto_estado_accesibilidad = fuente_columnas.render(f"Accesibilidad: {estado_accesibilidad}", True, globals.NEGRO)
-            texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 320))
+            texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 310))
             self.pantalla.blit(texto_estado_accesibilidad, texto_estado_accesibilidad_rect)
+
+            # Línea horizontal
+            pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (150, 340), (globals.PANTALLA_ANCHO - 150, 340), 2)
+
+            # Configuración de dificultad
+            texto_configuracion_dificultad = fuente_columnas.render("Nivel de dificultad (modo difícil)", True, globals.NEGRO)
+            texto_configuracion_dificultad_rect = texto_configuracion_dificultad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 390))
+            self.pantalla.blit(texto_configuracion_dificultad, texto_configuracion_dificultad_rect)
+
+            # Botón de reducir dificultad
+            boton_reducir_dificultad = self.dibujar_boton("-", (globals.PANTALLA_ANCHO - 130) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL)
+            
+            # Número de dificultad
+            texto_dificultad = fuente_columnas.render(str(self.config["dificil"]), True, globals.NEGRO)
+            texto_dificultad_rect = texto_dificultad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 440))
+            self.pantalla.blit(texto_dificultad, texto_dificultad_rect)
+
+            # Botón de aumentar dificultad
+            boton_aumentar_dificultad = self.dibujar_boton("+", (globals.PANTALLA_ANCHO + 50) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -569,16 +588,89 @@ class Juego:
                         self.toggle_accesibilidad(accesible=True)
                     elif boton_desactivar.collidepoint(evento.pos):
                         self.toggle_accesibilidad(accesible=False)
+                    elif boton_reducir_dificultad.collidepoint(evento.pos):
+                        self.modificar_dificultad_dificil(-1)
+                    elif boton_aumentar_dificultad.collidepoint(evento.pos):
+                        self.modificar_dificultad_dificil(1)
                     
             
     
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 
+    def modificar_dificultad_dificil(self, cambio):
+        self.config["dificil"] = max(1, min(7, int(self.config["dificil"]) + cambio))
+        if int(self.config["dificil"]) > 5:
+            aviso = True
+            while aviso:
+                rectangulo = pygame.Rect(globals.PANTALLA_ANCHO // 2 - 200, globals.PANTALLA_ALTO // 2 - 100, 400, 200)
+                pygame.draw.rect(self.pantalla, globals.GRIS, rectangulo)
+                pygame.draw.rect(self.pantalla, globals.GRIS_CLARO, rectangulo, 4)
+                fuente = pygame.font.Font(globals.fuente, 20)
+                texto = "Atención, subir la dificultad por encima de 5 puede ocasionar la generación de sudokus con múltiples soluciones."
+                palabras = texto.split()
+                lineas = []
+                linea_actual = palabras[0]
+                for palabra in palabras[1:]:
+                    if fuente.size(linea_actual + " " + palabra)[0] <= rectangulo.width - 20:
+                        linea_actual += " " + palabra
+                    else:
+                        lineas.append(linea_actual)
+                        linea_actual = palabra
+                lineas.append(linea_actual)
+                for i, linea in enumerate(lineas):
+                    texto_linea = fuente.render(linea, True, globals.NEGRO)
+                    texto_linea_rect = texto_linea.get_rect(center=(rectangulo.centerx, rectangulo.centery - 40 + i * 30))
+                    self.pantalla.blit(texto_linea, texto_linea_rect)
+
+                # dibujar botón de aceptar y al ser pulsado que aviso = false
+                boton_aceptar = self.dibujar_boton("Aceptar", globals.PANTALLA_ANCHO // 2 - 50, globals.PANTALLA_ALTO // 2 + 50, 100, 40, globals.GRIS_CLARO, globals.MORADO_CLARO)
+                for evento in pygame.event.get():
+                    if evento.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif evento.type == pygame.MOUSEBUTTONDOWN:
+                        if boton_aceptar.collidepoint(evento.pos):
+                            aviso = False
+                pygame.display.flip()
+
+
+        with open(globals.ARCHIVO_CONFIGURACION, mode='r', newline='') as archivo:
+            lines = archivo.readlines()
+    
+        with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
+            archivo.write("")  # Clear the file before writing
+            writer = csv.writer(archivo)
+            comprobado = False
+            for line in lines:
+                if not comprobado and "Configuracion" in line:
+                    writer.writerow(["Configuracion", "Valor"])
+                    comprobado = True
+                elif "dificil" in line:
+                    writer.writerow(["dificil", self.config["dificil"]])
+                else:
+                    writer.writerow(line.strip().split(','))  # Write each line as a CSV row
+
     def toggle_accesibilidad(self, accesible):
         self.config["accesibilidad"]=accesible
         print(self.config["accesibilidad"])
         # modificar el archivo de configuración
+        
+        with open(globals.ARCHIVO_CONFIGURACION, mode='r', newline='') as archivo:
+            lines = archivo.readlines()
+    
+        with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
+            archivo.write("")  # Clear the file before writing
+            writer = csv.writer(archivo)
+            comprobado = False
+            for line in lines:
+                if not comprobado and "Configuracion" in line:
+                    writer.writerow(["Configuracion", "Valor"])
+                    comprobado = True
+                elif "accesibilidad" in line:
+                    writer.writerow(["accesibilidad", str(accesible)])
+                else:
+                    writer.writerow(line.strip().split(','))  # Write each line as a CSV row
 
     def mostrar_menu(self):
         en_menu = True
@@ -682,7 +774,7 @@ class Sudoku:
 
         return Resuelto
         
-    def crear_sudoku(self):
+    def crear_sudoku(self, config):
         # Dificultad 0: Fácil (por defecto), 1: Media, 2: Difícil
         self.calcular_posibles()
         self.intentar_poner_valor(0,0)
@@ -696,9 +788,7 @@ class Sudoku:
         random.shuffle(casillas)
 
         resuelto = np.copy(self.sudoku)
-        
-        max_backtracking = 2
-        backtracking = 0
+    
 
         for [fila,columna] in casillas:
             s_aux = Sudoku()
@@ -708,14 +798,7 @@ class Sudoku:
                 self.sudoku[fila][columna] = 0
                 self.calcular_posibles()
 
-        # if self.dificultad == 2: # Verificar que el sudoku tenga al menos 16 pistas
-        #     for [fila,columna] in casillas:
-        #         if s_aux.backtracking(fila, columna) and backtracking <= max_backtracking and np.count_nonzero(self.sudoku) >= 16:
-        #             self.sudoku[fila][columna] = 0
-        #             print("Backtracking en [{}, {}]".format(fila, columna))
-        #             self.calcular_posibles()
-        #             backtracking += 1
-        
+
         # Elección de dificultad
         if self.dificultad == 0:
             for _ in range(7):
@@ -723,11 +806,12 @@ class Sudoku:
                 if self.sudoku[fila][columna] == 0:
                     self.sudoku[fila][columna] = resuelto[fila][columna]
         elif self.dificultad == 2:
-            for _ in range(5):
+            for _ in range(int(config["dificil"])):
                 fila, columna = random.choice(casillas)
                 if self.sudoku[fila][columna] != 0:
                     self.sudoku[fila][columna] = 0
         print("Número de pistas:", np.count_nonzero(self.sudoku))
+        print("Dificlultad:", config["dificil"])
         return self.sudoku, resuelto
 
     def intentar_poner_valor(self, fila, columna):
