@@ -320,7 +320,7 @@ class Juego:
                 if celda_seleccionada:
                     fila, columna = celda_seleccionada
                     self.iluminar_celdas(fila, columna)
-                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)
+                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO, True)
 
                 self.tablero.imprimir_numeros()
                 self.tablero.imprimir_tablero()
@@ -359,9 +359,9 @@ class Juego:
         for fila in range(9):
             for columna in range(9):
                 if self.tablero.sudoku[fila][columna] == self.tablero.resuelto[fila][columna]:
-                    self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO)  # Celda correcta
+                    self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO, False)  # Celda correcta
                 else:
-                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO)  # Celda incorrecta
+                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO, False, True)  # Celda incorrecta
                     completo = False
         self.tablero.imprimir_numeros()
         self.tablero.imprimir_tablero()
@@ -461,17 +461,17 @@ class Juego:
         inicio_columna = (columna // 3) * 3
         for i in range(3):
             for j in range(3):
-                self.dibujar_rectangulo(inicio_fila + i, inicio_columna + j, globals.VERDE_CLARO)
+                self.dibujar_rectangulo(inicio_fila + i, inicio_columna + j, globals.VERDE_CLARO, False)
 
         # Iluminar las celdas horizontales y verticales
         for i in range(9):
-            self.dibujar_rectangulo(fila, i, globals.VERDE_CLARO)  # Horizontal
-            self.dibujar_rectangulo(i, columna, globals.VERDE_CLARO)  # Vertical
+            self.dibujar_rectangulo(fila, i, globals.VERDE_CLARO, False)  # Horizontal
+            self.dibujar_rectangulo(i, columna, globals.VERDE_CLARO, False)  # Vertical
 
-    def iluminar_celda_seleccionada(self, fila, columna, color):
-        self.dibujar_rectangulo(fila, columna, color)
+    def iluminar_celda_seleccionada(self, fila, columna, color, central, incorrecta=False):
+        self.dibujar_rectangulo(fila, columna, color, central, incorrecta)
 
-    def dibujar_rectangulo(self, fila, columna, color):
+    def dibujar_rectangulo(self, fila, columna, color, central, incorrecta=False):
         grosor_linea = 4 if (fila % 3 == 0 or columna % 3 == 0) else 1
         rect = pygame.Rect(
             globals.MARGEN + columna * globals.TAMAÑO_CELDA + grosor_linea // 2,
@@ -479,7 +479,16 @@ class Juego:
             globals.TAMAÑO_CELDA - grosor_linea + 2.5,
             globals.TAMAÑO_CELDA - grosor_linea + 2.5
         )
+        
         pygame.draw.rect(self.pantalla, color, rect)
+        if self.config["accesibilidad"] and central:
+            imagen_cruz = pygame.image.load(globals.RUTA_COLOREADO)
+            imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
+            self.pantalla.blit(imagen_cruz, rect.topleft)
+        elif self.config["accesibilidad"] and incorrecta:
+            imagen_cruz = pygame.image.load(globals.RUTA_CRUZ)
+            imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
+            self.pantalla.blit(imagen_cruz, rect.topleft)
 
     def ver_tutorial(self):
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
@@ -933,7 +942,7 @@ class Tablero:
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
 
-    def imprimir_numeros(self, solucion=False):
+    def imprimir_numeros(self, solucion=False, accesibilidad=True):
         for fila in range(9):
             for columna in range(9):
                 if not solucion:
@@ -941,7 +950,16 @@ class Tablero:
                 else:
                     valor = self.resuelto[fila, columna]
                 if valor != 0:
-                    color = globals.NEGRO if valor > 0 else globals.ROJO
+                    if valor > 0:
+                        color = globals.NEGRO
+                    elif accesibilidad:
+                        color = globals.NEGRO
+                        fondo_cruz = pygame.image.load(globals.RUTA_CRUZ)
+                        fondo_cruz = pygame.transform.scale(fondo_cruz, (globals.TAMAÑO_CELDA, globals.TAMAÑO_CELDA))
+                        self.pantalla.blit(fondo_cruz, (globals.MARGEN + columna * globals.TAMAÑO_CELDA, globals.MARGEN + fila * globals.TAMAÑO_CELDA))
+                    else:
+                        color = globals.ROJO
+
                     if self.inicial[fila][columna] == valor:
                         texto = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE).render(str(abs(valor)), True, color)
                     else:
@@ -950,6 +968,7 @@ class Tablero:
                         globals.MARGEN + columna * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2,
                         globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2
                     ))
+                    
                     self.pantalla.blit(texto, texto_rect)
 
     def iluminar_celda(self, fila, columna, color):
