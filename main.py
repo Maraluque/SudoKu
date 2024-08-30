@@ -504,29 +504,59 @@ class Juego:
     def ver_creditos(self):
         #TODO COMPLETAR
         en_creditos = True
-        mi_foto_original = pygame.image.load(globals.RUTA_FOTO)  # Carga la foto
-        mi_foto = pygame.transform.scale(mi_foto_original, (130, 170))  # Redimensiona la foto
-    
-        margen_derecho = 10  # Margen derecho en píxeles
-        margen_superior = 10  # Margen superior en píxeles
-        posicion_x = self.pantalla.get_width() - mi_foto.get_width() - margen_derecho
-        posicion_y = margen_superior
+        
+        fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
+        fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
+
+        fuente_normal = pygame.font.Font(globals.fuente, globals.TAM_FUENTE - 5)
+        fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
+
+        #cargar logos uja y epsj
+        logo_uja = pygame.image.load(globals.RUTA_LOGO_UJA)
+        logo_uja = pygame.transform.scale(logo_uja, (200, 70))
+
+        logo_epsj = pygame.image.load(globals.RUTA_LOGO_EPSJ)
+        logo_epsj = pygame.transform.scale(logo_epsj, (150, 80))
+
 
         while en_creditos:
             
             self.pantalla.fill(globals.BLANCO)
-            self.pantalla.blit(mi_foto, (posicion_x, posicion_y))
-        
-            fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-            descripcion = fuente.render("Proyecto de Trabajo de Fin de Grado realizado por María de las Maravillas Luque Carmona", True, globals.NEGRO)
-            descripcion_rect = descripcion.get_rect(center=(self.pantalla.get_width() / 2, 300))
-            self.pantalla.blit(descripcion, descripcion_rect)
-        
-            contacto = fuente.render("Contacto: mmlc0007@red.ujaen.es", True, globals.NEGRO)
-            contacto_rect = contacto.get_rect(center=(self.pantalla.get_width() / 2, 350))
-            self.pantalla.blit(contacto, contacto_rect)
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+            self.pantalla.blit(fondo, (0, 0))
 
+            #imprimir logos encima del botón de volver uno al lado del otro
+            self.pantalla.blit(logo_uja, ((globals.PANTALLA_ANCHO // 2) - 200, globals.PANTALLA_ALTO - 200))
+            self.pantalla.blit(logo_epsj, ((globals.PANTALLA_ANCHO // 2) + 20, globals.PANTALLA_ALTO - 200))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            texto_titulo = fuente_titulo_negrita.render("Créditos", True, globals.NEGRO)
+            texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 70))
+            self.pantalla.blit(texto_titulo, texto_titulo_rect)
+
+            # Añadir texto del trabajo de fin de grado
+            texto_tfg = fuente_normal.render("Trabajo de Fin de Grado de Ingeniería Informática", True, globals.NEGRO)
+            texto_tfg_rect = texto_tfg.get_rect(center=(globals.PANTALLA_ANCHO // 2, 160))
+            self.pantalla.blit(texto_tfg, texto_tfg_rect)
+            
+            texto_nombre = fuente_normal.render("Hecho por: María de las Maravillas Luque Carmona", True, globals.NEGRO)
+            texto_nombre_rect = texto_nombre.get_rect(center=(globals.PANTALLA_ANCHO // 2, 200))
+            self.pantalla.blit(texto_nombre, texto_nombre_rect)
+
+            texto_tutor = fuente_normal.render("Tutor: Ángel Luis García Fernandez", True, globals.NEGRO)
+            texto_tutor_rect = texto_tutor.get_rect(center=(globals.PANTALLA_ANCHO // 2, 240))
+            self.pantalla.blit(texto_tutor, texto_tutor_rect)
+
+            texto_tfg = fuente_normal.render("Universidad de Jaén", True, globals.NEGRO)
+            texto_tfg_rect = texto_tfg.get_rect(center=(globals.PANTALLA_ANCHO // 2, 280))
+            self.pantalla.blit(texto_tfg, texto_tfg_rect)
+
+            texto_dept = fuente_normal.render("Departamento de informática", True, globals.NEGRO)
+            texto_dept_rect = texto_dept.get_rect(center=(globals.PANTALLA_ANCHO // 2, 320))
+            self.pantalla.blit(texto_dept, texto_dept_rect)
+
+
+            
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
