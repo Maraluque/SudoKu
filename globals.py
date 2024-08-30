@@ -1,5 +1,6 @@
 import os
 
+
 # Rutas
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,6 +23,20 @@ RUTA_COLOREADO = os.path.join(directorio_actual, "img", "coloreado.png")
 
 ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
 ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")
+
+# Utilidades
+# Lee el archivo de configuración csv y devuelve el valor de accesibilidad
+def es_accesible():
+    accesible = False
+    try:
+        with open(ARCHIVO_CONFIGURACION, "r") as archivo:
+            for linea in archivo:
+                if "accesibilidad" in linea:
+                    accesible = linea.split(",")[1].strip() == "True"
+        return accesible
+    except FileNotFoundError:
+        pass
+
 
 # Botones
 BORDER_RADIUS = 30

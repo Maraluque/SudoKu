@@ -481,14 +481,15 @@ class Juego:
         )
         
         pygame.draw.rect(self.pantalla, color, rect)
-        if self.config["accesibilidad"] and central:
-            imagen_cruz = pygame.image.load(globals.RUTA_COLOREADO)
-            imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
-            self.pantalla.blit(imagen_cruz, rect.topleft)
-        elif self.config["accesibilidad"] and incorrecta:
-            imagen_cruz = pygame.image.load(globals.RUTA_CRUZ)
-            imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
-            self.pantalla.blit(imagen_cruz, rect.topleft)
+        if globals.es_accesible():
+            if central:
+                imagen_cruz = pygame.image.load(globals.RUTA_COLOREADO)
+                imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
+                self.pantalla.blit(imagen_cruz, rect.topleft)
+            elif incorrecta:
+                imagen_cruz = pygame.image.load(globals.RUTA_CRUZ)
+                imagen_cruz = pygame.transform.scale(imagen_cruz, (globals.TAMAÑO_CELDA - grosor_linea + 2.5, globals.TAMAÑO_CELDA - grosor_linea + 2.5))
+                self.pantalla.blit(imagen_cruz, rect.topleft)
 
     def ver_tutorial(self):
         print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
@@ -560,7 +561,7 @@ class Juego:
             boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.VERDE)
             boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.ROJO)
 
-            estado_accesibilidad = "Activado" if self.config["accesibilidad"] else "Desactivado"
+            estado_accesibilidad = "Activado" if globals.es_accesible() else "Desactivado"
             texto_estado_accesibilidad = fuente_columnas.render(f"Accesibilidad: {estado_accesibilidad}", True, globals.NEGRO)
             texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 310))
             self.pantalla.blit(texto_estado_accesibilidad, texto_estado_accesibilidad_rect)
@@ -661,10 +662,6 @@ class Juego:
                     writer.writerow(line.strip().split(','))  # Write each line as a CSV row
 
     def toggle_accesibilidad(self, accesible):
-        self.config["accesibilidad"]=accesible
-        print(self.config["accesibilidad"])
-        # modificar el archivo de configuración
-        
         with open(globals.ARCHIVO_CONFIGURACION, mode='r', newline='') as archivo:
             lines = archivo.readlines()
     
@@ -942,7 +939,7 @@ class Tablero:
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
             pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
 
-    def imprimir_numeros(self, solucion=False, accesibilidad=True):
+    def imprimir_numeros(self, solucion=False):
         for fila in range(9):
             for columna in range(9):
                 if not solucion:
@@ -952,7 +949,7 @@ class Tablero:
                 if valor != 0:
                     if valor > 0:
                         color = globals.NEGRO
-                    elif accesibilidad:
+                    elif globals.es_accesible():
                         color = globals.NEGRO
                         fondo_cruz = pygame.image.load(globals.RUTA_CRUZ)
                         fondo_cruz = pygame.transform.scale(fondo_cruz, (globals.TAMAÑO_CELDA, globals.TAMAÑO_CELDA))
@@ -1051,7 +1048,6 @@ if __name__ == "__main__":
         with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
             writer = csv.writer(archivo)
             writer.writerow(["accesibilidad", False])
-            config["accesibilidad"] = False
 
     logo = pygame.image.load(globals.RUTA_LOGO)
 
