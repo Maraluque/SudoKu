@@ -20,6 +20,7 @@ RUTA_MEDALLA_ORO = os.path.join(directorio_actual, "img", "oro.png")
 RUTA_FOTO = os.path.join(directorio_actual, "img", "foto_orla.jpeg")
 RUTA_CRUZ = os.path.join(directorio_actual, "img", "cruz.png")
 RUTA_COLOREADO = os.path.join(directorio_actual, "img", "coloreado.png")
+RUTA_LEYENDA = os.path.join(directorio_actual, "img", "leyenda.png")
 
 ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
 ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")

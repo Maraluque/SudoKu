@@ -287,8 +287,13 @@ class Juego:
         en_juego = True
         celda_seleccionada = None
         cambio_en_tablero = True
+
+        #CARGAR IMAGEN LEYENDA
+        leyenda = pygame.image.load(globals.RUTA_LEYENDA)
+        leyenda = pygame.transform.scale(leyenda, (235, 235))
         
         while en_juego:
+            
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
@@ -315,8 +320,8 @@ class Juego:
 
             if cambio_en_tablero:
                 self.pantalla.fill(globals.BLANCO)
-                
-
+                if globals.es_accesible():
+                    self.pantalla.blit(leyenda, (globals.PANTALLA_ANCHO - 230, 270))
                 if celda_seleccionada:
                     fila, columna = celda_seleccionada
                     self.iluminar_celdas(fila, columna)
@@ -326,7 +331,9 @@ class Juego:
                 self.tablero.imprimir_tablero()
                 cambio_en_tablero = False
 
-            # Dibujar temporizador y botones
+            # Dibujar botones y leyenda
+            
+
             # Cargar imágenes
             logo_pausa = pygame.image.load(globals.RUTA_IMG_PAUSAR)
             logo_reanudar = pygame.image.load(globals.RUTA_IMG_INICIAR)
