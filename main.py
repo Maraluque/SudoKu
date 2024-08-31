@@ -36,8 +36,10 @@ class Juego:
             pygame.draw.rect(self.pantalla, color_activo, rect, border_radius=globals.BORDER_RADIUS)
             if click[0] == 1 and accion is not None:
                 accion()
+            texto_color = globals.NEGRO
         else:
             pygame.draw.rect(self.pantalla, color_inactivo, rect, border_radius=globals.BORDER_RADIUS)
+            texto_color = globals.BLANCO
 
         # Añadir logo centrado si se proporciona
         if logo:
@@ -47,7 +49,7 @@ class Juego:
         else:
             # Añadir texto centrado
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-            texto = fuente.render(mensaje, True, globals.BLANCO)
+            texto = fuente.render(mensaje, True, texto_color)  # Use texto_color for the text color
             texto_rect = texto.get_rect(center=rect.center)
             self.pantalla.blit(texto, texto_rect)
 
@@ -61,13 +63,13 @@ class Juego:
 
         
         # Redimensionar los fotogramas
-        tamaño_nuevo = (50, 50)  # Tamaño deseado para los fotogramas
-        frames = [pygame.transform.scale(frame, tamaño_nuevo) for frame in frames]
+        tam_nuevo = (50, 50)  # Tamaño deseado para los fotogramas
+        frames = [pygame.transform.scale(frame, tam_nuevo) for frame in frames]
 
         # Calcular las coordenadas para centrar la animación
         ancho_pantalla, alto_pantalla = self.pantalla.get_size()
-        x_centro = (ancho_pantalla - tamaño_nuevo[0]) // 2
-        y_centro = (alto_pantalla - tamaño_nuevo[1]) // 2
+        x_centro = (ancho_pantalla - tam_nuevo[0]) // 2
+        y_centro = (alto_pantalla - tam_nuevo[1]) // 2
 
         self.pantalla.fill(globals.BLANCO)
         for frame in frames:
@@ -101,7 +103,7 @@ class Juego:
         while en_puntuacion:
             self.pantalla.fill(globals.BLANCO)
             self.pantalla.blit(fondo, (0, 0))
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 100, 200, 50, globals.GRIS_CLARO, globals.MORADO, self.mostrar_menu)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -236,11 +238,11 @@ class Juego:
             self.pantalla.fill(globals.BLANCO)
             self.pantalla.blit(fondo, (0, 0))
 
-            boton_facil = self.dibujar_boton("Fácil", 550, 150, 200, 50, globals.GRIS_CLARO, globals.VERDE)
-            boton_medio = self.dibujar_boton("Medio", 550, 250, 200, 50, globals.GRIS_CLARO, globals.AMARILLO)
-            boton_dificil = self.dibujar_boton("Difícil", 550, 350, 200, 50, globals.GRIS_CLARO, globals.ROJO)
+            boton_facil = self.dibujar_boton("Fácil", 550, 150, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_medio = self.dibujar_boton("Medio", 550, 250, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_dificil = self.dibujar_boton("Difícil", 550, 350, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
-            boton_volver = self.dibujar_boton("Volver al menú", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.mostrar_menu)
+            boton_volver = self.dibujar_boton("Volver al menú", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO, self.mostrar_menu)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -343,16 +345,16 @@ class Juego:
             logo_reanudar = pygame.transform.scale(logo_reanudar, (50, 50))
 
             hueco_x = globals.PANTALLA_ANCHO - 225
-            self.dibujar_boton("Iniciar", hueco_x + 30, 50, 60, 50, globals.GRIS_CLARO, globals.VERDE, self.iniciar_temporizador, logo_reanudar)
+            self.dibujar_boton("Iniciar", hueco_x + 30, 50, 60, 50, globals.GRIS_CLARO, globals.AZUL2, self.iniciar_temporizador, logo_reanudar)
             self.dibujar_temporizador()
             if self.temporizador_iniciado or self.inicio_juego:
-                self.dibujar_boton("Pausar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.ROJO, self.pausar_temporizador, logo_pausa)
+                self.dibujar_boton("Pausar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.AZUL2, self.pausar_temporizador, logo_pausa)
             else:
-                self.dibujar_boton("Continuar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.ROJO, self.pausar_temporizador, logo_reanudar)
-            self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS_CLARO, globals.AZUL, self.comprobar_solucion)
-            self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS_CLARO, globals.AMARILLO, self.tablero.mostrar_solucion)
-            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS_CLARO, globals.NARANJA, self.tablero.borrar_tablero)
-            self.dibujar_boton("Salir", hueco_x, 500, 210, 50, globals.GRIS_CLARO, globals.MORADO_CLARO, self.salir_juego)
+                self.dibujar_boton("Continuar", hueco_x + 110, 50, 60, 50, globals.GRIS_CLARO, globals.AZUL2, self.pausar_temporizador, logo_reanudar)
+            self.dibujar_boton("Comprobar", hueco_x, 110, 210, 50, globals.GRIS_CLARO, globals.AZUL1, self.comprobar_solucion)
+            self.dibujar_boton("Mostrar Solución", hueco_x, 170, 210, 50, globals.GRIS_CLARO, globals.AZUL1, self.tablero.mostrar_solucion)
+            self.dibujar_boton("Borrar Tablero", hueco_x, 230, 210, 50, globals.GRIS_CLARO, globals.AZUL1, self.tablero.borrar_tablero)
+            self.dibujar_boton("Salir", hueco_x, 500, 210, 50, globals.GRIS_CLARO, globals.MORADO, self.salir_juego)
 
             self.actualizar_temporizador()
             self.dibujar_temporizador()
@@ -508,8 +510,8 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -537,9 +539,9 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -570,9 +572,9 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -603,9 +605,9 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -636,9 +638,9 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -669,8 +671,8 @@ class Juego:
 
             self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
-            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -715,7 +717,7 @@ class Juego:
             self.pantalla.blit(logo_uja, ((globals.PANTALLA_ANCHO // 2) - 200, globals.PANTALLA_ALTO - 200))
             self.pantalla.blit(logo_epsj, ((globals.PANTALLA_ANCHO // 2) + 20, globals.PANTALLA_ALTO - 200))
 
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO)
 
             texto_titulo = fuente_titulo_negrita.render("Créditos", True, globals.NEGRO)
             texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 70))
@@ -771,7 +773,7 @@ class Juego:
             
             self.pantalla.blit(fondo, (0, 0))
     
-            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 110, 200, 50, globals.GRIS_CLARO, globals.MORADO)
     
             texto_titulo = fuente_titulo_negrita.render("Ajustes", True, globals.NEGRO)
             texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 40))
@@ -782,8 +784,8 @@ class Juego:
             texto_modo_accesibilidad_rect = texto_modo_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 140))
             self.pantalla.blit(texto_modo_accesibilidad, texto_modo_accesibilidad_rect)
 
-            boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.VERDE)
-            boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.ROJO)
+            boton_activar = self.dibujar_boton("Activar", (globals.PANTALLA_ANCHO - 450) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
+            boton_desactivar = self.dibujar_boton("Desactivar", (globals.PANTALLA_ANCHO + 50) // 2, 190, 200, 50, globals.GRIS_CLARO, globals.AZUL1)
 
             estado_accesibilidad = "Activado" if globals.es_accesible() else "Desactivado"
             texto_estado_accesibilidad = fuente_columnas.render(f"Accesibilidad: {estado_accesibilidad}", True, globals.NEGRO)
@@ -799,7 +801,7 @@ class Juego:
             self.pantalla.blit(texto_configuracion_dificultad, texto_configuracion_dificultad_rect)
 
             # Botón de reducir dificultad
-            boton_reducir_dificultad = self.dibujar_boton("-", (globals.PANTALLA_ANCHO - 130) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL)
+            boton_reducir_dificultad = self.dibujar_boton("-", (globals.PANTALLA_ANCHO - 130) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL2)
             
             # Número de dificultad
             texto_dificultad = fuente_columnas.render(str(self.config["dificil"]), True, globals.NEGRO)
@@ -807,7 +809,7 @@ class Juego:
             self.pantalla.blit(texto_dificultad, texto_dificultad_rect)
 
             # Botón de aumentar dificultad
-            boton_aumentar_dificultad = self.dibujar_boton("+", (globals.PANTALLA_ANCHO + 50) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL)
+            boton_aumentar_dificultad = self.dibujar_boton("+", (globals.PANTALLA_ANCHO + 50) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL2)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -858,7 +860,7 @@ class Juego:
                     self.pantalla.blit(texto_linea, texto_linea_rect)
 
                 # dibujar botón de aceptar y al ser pulsado que aviso = false
-                boton_aceptar = self.dibujar_boton("Aceptar", globals.PANTALLA_ANCHO // 2 - 50, globals.PANTALLA_ALTO // 2 + 50, 100, 40, globals.GRIS_CLARO, globals.MORADO_CLARO)
+                boton_aceptar = self.dibujar_boton("Aceptar", globals.PANTALLA_ANCHO // 2 - 50, globals.PANTALLA_ALTO // 2 + 50, 100, 40, globals.GRIS_CLARO, globals.MORADO)
                 for evento in pygame.event.get():
                     if evento.type == pygame.QUIT:
                         pygame.quit()
@@ -914,12 +916,12 @@ class Juego:
             
             self.pantalla.blit(fondo, (0, 0))
             
-            boton_empezar = self.dibujar_boton("Empezar", 550, 50, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.empezar_juego)
-            boton_tutorial = self.dibujar_boton("Tutorial", 550, 130, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_tutorial)
-            boton_creditos = self.dibujar_boton("Créditos", 550, 210, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ver_creditos)
-            boton_ajustes = self.dibujar_boton("Ajustes", 550, 290, 200, 50, globals.GRIS_CLARO, globals.ROJO, self.ajustes)
-            boton_puntuacion = self.dibujar_boton("Puntuación", 550, 370, 200, 50, globals.GRIS_CLARO, globals.AZUL, self.mostrar_puntuacion)
-            boton_salir = self.dibujar_boton("Salir", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_empezar = self.dibujar_boton("Empezar", 550, 50, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.empezar_juego)
+            boton_tutorial = self.dibujar_boton("Tutorial", 550, 130, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.ver_tutorial)
+            boton_creditos = self.dibujar_boton("Créditos", 550, 210, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.ver_creditos)
+            boton_ajustes = self.dibujar_boton("Ajustes", 550, 290, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.ajustes)
+            boton_puntuacion = self.dibujar_boton("Puntuación", 550, 370, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.mostrar_puntuacion)
+            boton_salir = self.dibujar_boton("Salir", 550, 500, 200, 50, globals.GRIS_CLARO, globals.MORADO)
 
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -1040,8 +1042,6 @@ class Sudoku:
                 fila, columna = random.choice(casillas)
                 if self.sudoku[fila][columna] != 0:
                     self.sudoku[fila][columna] = 0
-        print("Número de pistas:", np.count_nonzero(self.sudoku))
-        print("Dificlultad:", config["dificil"])
         return self.sudoku, resuelto
 
     def intentar_poner_valor(self, fila, columna):
@@ -1131,7 +1131,6 @@ class Tablero:
             self.sudoku[fila][columna] = 0
 
     def borrar_tablero(self):
-        print("Borrando tablero")
         for fila in range(9):
             for columna in range(9):
                 self.sudoku[fila][columna] = self.inicial[fila][columna]
@@ -1160,8 +1159,8 @@ class Tablero:
     def imprimir_tablero(self):
         for fila in range(10):
             grosor = 4 if fila % 3 == 0 else 1
-            pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
-            pygame.draw.line(self.pantalla, globals.COLOR_LINEA, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
+            pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
+            pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
 
     def imprimir_numeros(self, solucion=False):
         for fila in range(9):
