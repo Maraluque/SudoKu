@@ -10,6 +10,14 @@ class Tablero:
         self.pantalla = pantalla
         
     def set_valor(self, fila, columna, valor):
+        """
+        Establece el valor de una celda en el tablero.
+
+        Parámetros:
+        - fila: entero que representa la fila de la celda.
+        - columna: entero que representa la columna de la celda.
+        - valor: entero que representa el valor a establecer en la celda.
+        """
         if self.inicial[fila, columna] == 0:  # Solo permitir cambios en celdas que eran 0 inicialmente
             if self.sudoku[fila][columna] == valor:
                 return
@@ -19,10 +27,20 @@ class Tablero:
                 self.sudoku[fila][columna] = -valor
 
     def borrar_valor(self, fila, columna):
+        """
+        Borra el valor de una celda en el tablero.
+
+        Parámetros:
+        - fila: entero que representa la fila de la celda.
+        - columna: entero que representa la columna de la celda.
+        """
         if self.inicial[fila][columna] == 0:  # Solo permitir borrar en celdas que eran 0 inicialmente
             self.sudoku[fila][columna] = 0
 
     def borrar_tablero(self):
+        """
+        Borra el contenido del tablero y lo restablece a su estado inicial.
+        """
         for fila in range(9):
             for columna in range(9):
                 self.sudoku[fila][columna] = self.inicial[fila][columna]
@@ -35,6 +53,17 @@ class Tablero:
         pygame.display.update()
 
     def es_posible(self, fila, columna, numero):
+        """
+        Verifica si es posible colocar un número en una celda del tablero.
+
+        Parámetros:
+        - fila: entero que representa la fila de la celda.
+        - columna: entero que representa la columna de la celda.
+        - numero: entero que representa el número a verificar.
+
+        Retorna:
+        - True si es posible colocar el número en la celda, False en caso contrario.
+        """
         # Verificar fila
         if numero in self.sudoku[fila]:
             return False
@@ -49,12 +78,21 @@ class Tablero:
         return True
         
     def imprimir_tablero(self):
+        """
+        Imprime las líneas del tablero en la pantalla.
+        """
         for fila in range(10):
             grosor = 4 if fila % 3 == 0 else 1
             pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), (globals.ANCHO - globals.MARGEN, globals.MARGEN + fila * globals.TAMAÑO_CELDA), grosor)
             pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + fila * globals.TAMAÑO_CELDA, globals.ALTO - globals.MARGEN), grosor)
 
     def imprimir_numeros(self, solucion=False):
+        """
+        Imprime los números en el tablero.
+
+        Parámetros:
+        - solucion: booleano que indica si se imprimirá la solución en lugar del sudoku actual.
+        """
         for fila in range(9):
             for columna in range(9):
                 if not solucion:
@@ -84,6 +122,14 @@ class Tablero:
                     self.pantalla.blit(texto, texto_rect)
 
     def iluminar_celda(self, fila, columna, color):
+        """
+        Ilumina una celda del tablero con un color específico.
+
+        Parámetros:
+        - fila: entero que representa la fila de la celda.
+        - columna: entero que representa la columna de la celda.
+        - color: tupla que representa el color en formato RGB.
+        """
         rect = pygame.Rect(
             globals.MARGEN + columna * globals.TAMAÑO_CELDA,
             globals.MARGEN + fila * globals.TAMAÑO_CELDA,
@@ -101,6 +147,13 @@ class Tablero:
             self.pantalla.blit(texto, texto_rect)
 
     def comprobar_solucion(self):
+        """
+        Comprueba si la solución del sudoku es correcta y resalta las celdas incorrectas en amarillo.
+
+        No recibe ningún parámetro.
+
+        No retorna ningún valor.
+        """
         for fila in range(9):
             for columna in range(9):
                 if self.inicial[fila, columna] == 0:  # Solo comprobar celdas que no estaban rellenas inicialmente
@@ -112,6 +165,13 @@ class Tablero:
         pygame.display.update()
 
     def dibujar_tablero_comprobado(self):
+        """
+        Dibuja el tablero con la solución comprobada.
+
+        No recibe ningún parámetro.
+
+        No retorna ningún valor.
+        """
         for fila in range(9):
             for columna in range(9):
                 valor = self.sudoku[fila][columna]
@@ -130,6 +190,13 @@ class Tablero:
             pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN + i * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + i * globals.TAMAÑO_CELDA, globals.MARGEN + 9 * globals.TAMAÑO_CELDA), grosor)
 
     def mostrar_solucion(self):
+        """
+        Muestra la solución del sudoku en el tablero.
+
+        No recibe ningún parámetro.
+
+        No retorna ningún valor.
+        """
         self.borrar_tablero()
         for fila in range(9):
             for columna in range(9):

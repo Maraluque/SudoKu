@@ -23,6 +23,23 @@ class Juego:
         
 
     def dibujar_boton(self, mensaje, x, y, ancho, alto, color_inactivo, color_activo, accion=None, logo=None):
+        """
+        Dibuja un botón en la pantalla.
+
+        Args:
+            mensaje (str): El texto que se mostrará en el botón.
+            x (int): La coordenada x del botón.
+            y (int): La coordenada y del botón.
+            ancho (int): El ancho del botón.
+            alto (int): El alto del botón.
+            color_inactivo (tuple): El color del botón cuando no está seleccionado.
+            color_activo (tuple): El color del botón cuando está seleccionado.
+            accion (function, optional): La función que se ejecutará cuando se haga clic en el botón. Defaults to None.
+            logo (pygame.Surface, optional): La imagen que se mostrará en el botón. Defaults to None.
+
+        Returns:
+            pygame.Rect: El rectángulo que representa el botón.
+        """
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         rect = pygame.Rect(x, y, ancho, alto)
@@ -53,15 +70,18 @@ class Juego:
             texto_rect = texto.get_rect(center=rect.center)
             self.pantalla.blit(texto, texto_rect)
 
-        
-
         return rect
 
     def mostrar_pantalla_carga(self):
+        """
+        Muestra una pantalla de carga animada.
+
+        Carga una serie de imágenes y las muestra en secuencia para simular una animación de carga.
+
+        """
         # Cargar imágenes de la animación
         frames = [pygame.image.load(f'img/cargando{i}.png') for i in range(1, 12)]  # Asegúrate de tener frame1.png, frame2.png, etc.
 
-        
         # Redimensionar los fotogramas
         tam_nuevo = (50, 50)  # Tamaño deseado para los fotogramas
         frames = [pygame.transform.scale(frame, tam_nuevo) for frame in frames]
@@ -79,6 +99,12 @@ class Juego:
             time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
 
     def mostrar_puntuacion(self):
+        """
+        Muestra la pantalla de puntuaciones.
+
+        Muestra una tabla con las puntuaciones de los jugadores en cada dificultad.
+
+        """
         en_puntuacion = True
 
         puntuaciones = []
@@ -230,6 +256,15 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def seleccionar_dificultad(self):
+        """
+        Permite al jugador seleccionar la dificultad del juego.
+
+        Muestra una pantalla con tres botones para elegir entre las dificultades Fácil, Medio y Difícil.
+        Al hacer clic en uno de los botones, se establece la dificultad seleccionada y se sale de la pantalla de selección.
+
+        Returns:
+            int: El índice de la dificultad seleccionada (0 para Fácil, 1 para Medio, 2 para Difícil).
+        """
         self.seleccionando_dificultad = True
         fondo = pygame.image.load(globals.RUTA_FONDO)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
@@ -274,10 +309,25 @@ class Juego:
         return self.dificultad
 
     def set_dificultad(self, dificultad):
+        """
+        Establece la dificultad del juego.
+
+        Args:
+            dificultad (int): El índice de la dificultad seleccionada (0 para Fácil, 1 para Medio, 2 para Difícil).
+        """
         self.dificultad = dificultad
         self.seleccionando_dificultad = False
 
     def empezar_juego(self):
+        """
+        Inicia el juego de sudoku.
+
+        Muestra la pantalla de carga y la selección de dificultad.
+        Crea el tablero de sudoku y lo muestra en la pantalla.
+        Permite al jugador interactuar con el tablero y realizar acciones como ingresar números, borrar celdas, pausar el juego, etc.
+        Comprueba si el jugador ha completado correctamente el sudoku y muestra un mensaje de felicitación en caso afirmativo.
+
+        """
         # pantalla de carga y selección de dificultad
         self.dificultad = self.seleccionar_dificultad()
         self.mostrar_pantalla_carga()
@@ -364,6 +414,14 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def comprobar_solucion(self):
+        """
+        Comprueba si el jugador ha completado correctamente el sudoku.
+
+        Recorre todas las celdas del tablero y compara los valores ingresados por el jugador con los valores de la solución.
+        Ilumina las celdas correctas en verde y las celdas incorrectas en morado, o de una forma diferente si la accesibilidad está activa.
+        Muestra el tablero actualizado en la pantalla.
+
+        """
         completo = True
         for fila in range(9):
             for columna in range(9):
@@ -427,8 +485,13 @@ class Juego:
 
 
         pygame.display.update()
-
     def dibujar_temporizador(self):
+        """
+        Dibuja el temporizador en la pantalla.
+
+        Muestra el tiempo transcurrido en el juego en formato MM:SS.
+
+        """
         rect_temporizador = pygame.Rect(globals.PANTALLA_ANCHO - 170, 10, 100, 25)
         self.pantalla.fill((255, 255, 255), rect_temporizador)
         minutos = int(self.tiempo_actual // 60)
@@ -438,10 +501,23 @@ class Juego:
         self.pantalla.blit(texto, (globals.PANTALLA_ANCHO - 150, 10))
 
     def iniciar_temporizador(self):
+        """
+        Inicia el temporizador del juego.
+
+        Reinicia el temporizador y marca el inicio del juego.
+
+        """
         self.reiniciar_temporizador()
         self.temporizador_iniciado = True
 
     def pausar_temporizador(self):
+        """
+        Pausa o reanuda el temporizador del juego.
+
+        Si el temporizador está en marcha, lo pausa y guarda el tiempo transcurrido.
+        Si el temporizador está pausado, lo reanuda y ajusta el tiempo de inicio.
+
+        """
         self.inicio_juego= False
         if self.temporizador_iniciado:
             self.tiempo_pausa = time.time() - self.tiempo_inicio
@@ -452,19 +528,48 @@ class Juego:
         time.sleep(0.1)
 
     def reiniciar_temporizador(self):
+        """
+        Reinicia el temporizador del juego.
+
+        Establece el tiempo de inicio, el tiempo actual y el tiempo de pausa a cero.
+
+        """
         self.tiempo_inicio = time.time()
         self.tiempo_actual = 0
         self.tiempo_pausa = 0
 
     def actualizar_temporizador(self):
+        """
+        Actualiza el temporizador del juego.
+
+        Calcula el tiempo transcurrido desde el inicio del juego.
+
+        """
         if self.temporizador_iniciado:
             self.tiempo_actual = time.time() - self.tiempo_inicio
 
     def salir_juego(self):
+        """
+        Sale del juego.
+
+        Cierra la ventana del juego y finaliza el programa.
+
+        """
         pygame.quit()
         sys.exit()
 
     def iluminar_celdas(self, fila, columna):
+        """
+        Ilumina las celdas del tablero.
+
+        Ilumina las celdas del cuadrado 3x3 al que pertenece la celda seleccionada.
+        Ilumina las celdas horizontales y verticales de la celda seleccionada.
+
+        Args:
+            fila (int): La fila de la celda seleccionada.
+            columna (int): La columna de la celda seleccionada.
+
+        """
         # Iluminar las celdas del cuadrado 3x3
         inicio_fila = (fila // 3) * 3
         inicio_columna = (columna // 3) * 3
@@ -478,9 +583,35 @@ class Juego:
             self.dibujar_rectangulo(i, columna, globals.VERDE_CLARO, False)  # Vertical
 
     def iluminar_celda_seleccionada(self, fila, columna, color, central, incorrecta=False):
+        """
+        Ilumina la celda seleccionada en el tablero.
+
+        Ilumina la celda seleccionada con un color específico.
+
+        Args:
+            fila (int): La fila de la celda seleccionada.
+            columna (int): La columna de la celda seleccionada.
+            color (tuple): El color en formato RGB.
+            central (bool): Indica si la celda seleccionada es la celda central del cuadrado 3x3.
+            incorrecta (bool, optional): Indica si la celda seleccionada es incorrecta. Por defecto es False.
+
+        """
         self.dibujar_rectangulo(fila, columna, color, central, incorrecta)
 
     def dibujar_rectangulo(self, fila, columna, color, central, incorrecta=False):
+        """
+        Dibuja un rectángulo en el tablero.
+
+        Dibuja un rectángulo en la posición correspondiente del tablero con un color específico.
+
+        Args:
+            fila (int): La fila del rectángulo.
+            columna (int): La columna del rectángulo.
+            color (tuple): El color en formato RGB.
+            central (bool): Indica si el rectángulo es el central del cuadrado 3x3.
+            incorrecta (bool, optional): Indica si el número introducido es incorrecto para mostrarlo de manera accesible. Por defecto es False.
+
+        """
         grosor_linea = 4 if (fila % 3 == 0 or columna % 3 == 0) else 1
         rect = pygame.Rect(
             globals.MARGEN + columna * globals.TAMAÑO_CELDA + grosor_linea // 2,
@@ -501,6 +632,12 @@ class Juego:
                 self.pantalla.blit(imagen_cruz, rect.topleft)
 
     def ver_tutorial(self):
+        """
+        Muestra el tutorial del juego.
+
+        Muestra la primera página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_1)
@@ -530,6 +667,12 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
     
     def ver_tutorial_pagina2(self):
+        """
+        Muestra la segunda página del tutorial.
+
+        Muestra la segunda página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_2)
@@ -563,6 +706,12 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def ver_tutorial_pagina3(self):
+        """
+        Muestra la tercera página del tutorial.
+
+        Muestra la tercera página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_3)
@@ -594,8 +743,14 @@ class Juego:
             
             pygame.display.flip()
             pygame.time.Clock().tick(60) # 60 FPS
-    
+
     def ver_tutorial_pagina4(self):
+        """
+        Muestra la cuarta página del tutorial.
+
+        Muestra la cuarta página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_4)
@@ -629,6 +784,12 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def ver_tutorial_pagina5(self):
+        """
+        Muestra la quinta página del tutorial.
+
+        Muestra la quinta página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_5)
@@ -662,6 +823,12 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def ver_tutorial_pagina6(self):
+        """
+        Muestra la sexta página del tutorial.
+
+        Muestra la sexta página del tutorial en la pantalla.
+        Permite al jugador navegar entre las diferentes páginas del tutorial.
+        """
         en_tutorial = True
 
         tutorial = pygame.image.load(globals.RUTA_TUTORIAL_6)
@@ -691,7 +858,12 @@ class Juego:
             pygame.time.Clock().tick(60) # 60 FPS
 
     def ver_creditos(self):
-        #TODO COMPLETAR
+        """
+        Muestra la pantalla de créditos.
+
+        Muestra la pantalla de créditos en la que se muestra información sobre el trabajo de fin de grado, el autor y el tutor.
+        Permite al jugador volver al menú principal.
+        """
         en_creditos = True
         
         fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
@@ -700,7 +872,6 @@ class Juego:
         fuente_normal = pygame.font.Font(globals.fuente, globals.TAM_FUENTE - 5)
         fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
 
-        #cargar logos uja y epsj
         logo_uja = pygame.image.load(globals.RUTA_LOGO_UJA)
         logo_uja = pygame.transform.scale(logo_uja, (200, 70))
 
@@ -713,7 +884,6 @@ class Juego:
             self.pantalla.fill(globals.BLANCO)
             self.pantalla.blit(fondo, (0, 0))
 
-            #imprimir logos encima del botón de volver uno al lado del otro
             self.pantalla.blit(logo_uja, ((globals.PANTALLA_ANCHO // 2) - 200, globals.PANTALLA_ALTO - 200))
             self.pantalla.blit(logo_epsj, ((globals.PANTALLA_ANCHO // 2) + 20, globals.PANTALLA_ALTO - 200))
 
@@ -759,6 +929,12 @@ class Juego:
             pygame.display.flip()
 
     def ajustes(self):
+        """
+        Muestra la pantalla de ajustes.
+
+        Muestra la pantalla de ajustes en la que se pueden modificar diferentes configuraciones del juego, como el modo de accesibilidad y la dificultad.
+        Permite al jugador volver al menú principal.
+        """
         # edición de los ajustes del juego
         en_ajustes = True
         
@@ -835,6 +1011,16 @@ class Juego:
             pygame.time.Clock().tick(60)
 
     def modificar_dificultad_dificil(self, cambio):
+        """
+        Modifica la dificultad del modo difícil.
+
+        Parámetros:
+        - cambio: entero que indica el cambio en la dificultad (positivo o negativo)
+
+        La función modifica el valor de la dificultad del modo difícil en la configuración del juego.
+        Si el valor de la dificultad supera el límite máximo (7) o el límite mínimo (1), se ajusta al límite correspondiente.
+        Si el valor de la dificultad es mayor a 5, muestra un aviso indicando que puede generar sudokus con múltiples soluciones.
+        """
         self.config["dificil"] = max(1, min(7, int(self.config["dificil"]) + cambio))
         if int(self.config["dificil"]) > 5:
             aviso = True
@@ -888,6 +1074,14 @@ class Juego:
                     writer.writerow(line.strip().split(','))  # Write each line as a CSV row
 
     def toggle_accesibilidad(self, accesible):
+        """
+        Cambia el estado de accesibilidad del juego.
+
+        Parámetros:
+        - accesible: booleano que indica si el modo de accesibilidad debe estar activado o desactivado
+
+        La función modifica el valor del modo de accesibilidad en la configuración del juego.
+        """
         with open(globals.ARCHIVO_CONFIGURACION, mode='r', newline='') as archivo:
             lines = archivo.readlines()
     
@@ -905,6 +1099,12 @@ class Juego:
                     writer.writerow(line.strip().split(','))  # Write each line as a CSV row
 
     def mostrar_menu(self):
+        """
+        Muestra el menú principal del juego.
+
+        Muestra los diferentes botones del menú (Empezar, Tutorial, Créditos, Ajustes, Puntuación, Salir) en la pantalla.
+        Permite al jugador interactuar con los botones y realizar diferentes acciones según el botón seleccionado.
+        """
         en_menu = True
 
         fondo = pygame.image.load(globals.RUTA_FONDO)
@@ -948,12 +1148,5 @@ class Juego:
                         self.ajustes()
                         en_menu = False
 
-            
-
-            
             pygame.display.flip()
             pygame.time.Clock().tick(60)
-
-
-    
-
