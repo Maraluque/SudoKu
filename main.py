@@ -499,7 +499,194 @@ class Juego:
                 self.pantalla.blit(imagen_cruz, rect.topleft)
 
     def ver_tutorial(self):
-        print("Ver tutorial")  # Aquí iría la lógica para mostrar el tutorial
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_1)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_siguiente.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina2()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+    
+    def ver_tutorial_pagina2(self):
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_2)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_anterior.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial()
+                    elif boton_siguiente.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina3()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+
+    def ver_tutorial_pagina3(self):
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_3)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_anterior.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina2()
+                    elif boton_siguiente.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina4()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+    
+    def ver_tutorial_pagina4(self):
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_4)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_anterior.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina3()
+                    elif boton_siguiente.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina5()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+
+    def ver_tutorial_pagina5(self):
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_5)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_siguiente = self.dibujar_boton("Siguiente", (globals.PANTALLA_ANCHO + 300) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_anterior.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina4()
+                    elif boton_siguiente.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina6()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
+
+    def ver_tutorial_pagina6(self):
+        en_tutorial = True
+
+        tutorial = pygame.image.load(globals.RUTA_TUTORIAL_6)
+
+        while en_tutorial:
+            self.pantalla.fill(globals.BLANCO)
+
+            self.pantalla.blit(tutorial, ((globals.PANTALLA_ANCHO - 600) // 2, 50))
+
+            boton_volver = self.dibujar_boton("Volver al menú", (globals.PANTALLA_ANCHO - 700) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+            boton_anterior = self.dibujar_boton("Anterior", (globals.PANTALLA_ANCHO - 200) // 2, globals.PANTALLA_ALTO - 90, 200, 50, globals.GRIS_CLARO, globals.MORADO_CLARO)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = evento.pos
+                    if boton_volver.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.mostrar_menu()
+                    elif boton_anterior.collidepoint(mouse_pos):
+                        en_tutorial = False
+                        self.ver_tutorial_pagina5()
+            
+            pygame.display.flip()
+            pygame.time.Clock().tick(60) # 60 FPS
 
     def ver_creditos(self):
         #TODO COMPLETAR
@@ -1023,7 +1210,6 @@ class Tablero:
             self.pantalla.blit(texto, texto_rect)
 
     def comprobar_solucion(self):
-        print("comprobando solución")
         for fila in range(9):
             for columna in range(9):
                 if self.inicial[fila, columna] == 0:  # Solo comprobar celdas que no estaban rellenas inicialmente
@@ -1033,10 +1219,8 @@ class Tablero:
                         self.iluminar_celda(fila, columna, globals.VERDE)
         self.dibujar_tablero_comprobado()
         pygame.display.update()
-        # si está bien muestra un mensaje de enhorabuena
 
     def dibujar_tablero_comprobado(self):
-        print("dibujando tablero")
         for fila in range(9):
             for columna in range(9):
                 valor = self.sudoku[fila][columna]
@@ -1055,7 +1239,6 @@ class Tablero:
             pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN + i * globals.TAMAÑO_CELDA, globals.MARGEN), (globals.MARGEN + i * globals.TAMAÑO_CELDA, globals.MARGEN + 9 * globals.TAMAÑO_CELDA), grosor)
 
     def mostrar_solucion(self):
-        print("Mostrando la solución")
         self.borrar_tablero()
         for fila in range(9):
             for columna in range(9):

@@ -23,6 +23,13 @@ RUTA_COLOREADO = os.path.join(directorio_actual, "img", "coloreado.png")
 RUTA_LEYENDA = os.path.join(directorio_actual, "img", "leyenda.png")
 RUTA_LOGO_UJA = os.path.join(directorio_actual, "img", "uja-logo.png")
 RUTA_LOGO_EPSJ = os.path.join(directorio_actual, "img", "epsj-logo.png")
+RUTA_TUTORIAL_1 = os.path.join(directorio_actual, "img", "tutorial", "1.png")
+RUTA_TUTORIAL_2 = os.path.join(directorio_actual, "img", "tutorial", "2.png")
+RUTA_TUTORIAL_3 = os.path.join(directorio_actual, "img", "tutorial", "3.png")
+RUTA_TUTORIAL_4 = os.path.join(directorio_actual, "img", "tutorial", "4.png")
+RUTA_TUTORIAL_5 = os.path.join(directorio_actual, "img", "tutorial", "5.png")
+RUTA_TUTORIAL_6 = os.path.join(directorio_actual, "img", "tutorial", "6.png")
+
 
 ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
 ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")
