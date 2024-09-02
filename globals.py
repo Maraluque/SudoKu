@@ -45,6 +45,7 @@ def es_accesible():
     except FileNotFoundError:
         pass
 
+FPS = 60
 
 # Botones
 BORDER_RADIUS = 30

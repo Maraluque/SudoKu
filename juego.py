@@ -240,7 +240,7 @@ class Juego:
             self.pantalla.blit(texto_promedio_dificil, texto_promedio_dificil_rect)
 
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def seleccionar_dificultad(self):
         """
@@ -286,7 +286,7 @@ class Juego:
                         self.mostrar_menu()
                     
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
             
 
@@ -387,7 +387,7 @@ class Juego:
             
 
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def comprobar_solucion(self):
         """
@@ -638,7 +638,7 @@ class Juego:
                         self.ver_tutorial_pagina2()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
     
     def ver_tutorial_pagina2(self):
         """
@@ -677,7 +677,7 @@ class Juego:
                         self.ver_tutorial_pagina3()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def ver_tutorial_pagina3(self):
         """
@@ -716,7 +716,7 @@ class Juego:
                         self.ver_tutorial_pagina4()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def ver_tutorial_pagina4(self):
         """
@@ -755,7 +755,7 @@ class Juego:
                         self.ver_tutorial_pagina5()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def ver_tutorial_pagina5(self):
         """
@@ -794,7 +794,7 @@ class Juego:
                         self.ver_tutorial_pagina6()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def ver_tutorial_pagina6(self):
         """
@@ -829,7 +829,7 @@ class Juego:
                         self.ver_tutorial_pagina5()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def ver_creditos(self):
         """
@@ -970,7 +970,7 @@ class Juego:
                         self.modificar_dificultad_dificil(1)
                     
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
 
     def modificar_dificultad_dificil(self, cambio):
         """
@@ -1109,4 +1109,4 @@ class Juego:
                         en_menu = False
 
             pygame.display.flip()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(globals.FPS)
