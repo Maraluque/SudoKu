@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     pygame.init()
     pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
-    pygame.display.set_caption("SUDOku")
+    pygame.display.set_caption("Sudo ku")
     s = sudoku.Sudoku()
     jugar = juego.Juego(pantalla, s, config)
     jugar.mostrar_menu()
