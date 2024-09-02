@@ -1,6 +1,17 @@
 import os
+from pathlib import Path
 
 # Rutas
+def cargar_directorios():
+    directorio_usuario = Path.home()
+    directorio_usuario.mkdir(exist_ok=True)
+    directorio_usuario = os.path.join(directorio_usuario, "SudoKu")
+    if not os.path.exists(directorio_usuario):
+        os.makedirs(directorio_usuario)
+    return os.path.join(directorio_usuario, "puntuacion.csv"), os.path.join(directorio_usuario, "configuracion.csv")
+
+ARCHIVO_PUNTUACION, ARCHIVO_CONFIGURACION = cargar_directorios()
+
 directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
 fuente = os.path.join(directorio_actual, "font", "roboto", "Roboto-Light.ttf")
@@ -40,10 +51,6 @@ IMG_CARGANDO9 = os.path.join(directorio_actual, "img", "cargando9.png")
 IMG_CARGANDO10 = os.path.join(directorio_actual, "img", "cargando10.png")
 IMG_CARGANDO11 = os.path.join(directorio_actual, "img", "cargando11.png")
 IMG_CARGANDO12 = os.path.join(directorio_actual, "img", "cargando12.png")
-
-
-ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
-ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")
 
 # Utilidades
 def es_accesible():

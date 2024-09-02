@@ -23,7 +23,9 @@ if __name__ == "__main__":
     else:
         with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
             writer = csv.writer(archivo)
+            writer.writerow(["Configuracion", "Valor"])
             writer.writerow(["accesibilidad", False])
+            writer.writerow(["dificil",2])
 
     logo = pygame.image.load(globals.RUTA_LOGO)
 

@@ -121,9 +121,6 @@ class Juego:
                 puntuaciones.append(row)
         puntuaciones.sort(key=lambda x: (x[0], float(x[1])))
 
-        # leer si hay alguna puntuacion y meterlo en un booleano
-        
-
         fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
 
