@@ -75,7 +75,20 @@ class Juego:
         Carga una serie de imágenes y las muestra en secuencia para simular una animación de carga.
 
         """
-        frames = [pygame.image.load(f'img/cargando{i}.png') for i in range(1, 12)]
+        frames = []
+        frames.append(pygame.image.load(globals.IMG_CARGANDO1))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO2))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO3))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO4))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO5))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO6))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO7))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO8))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO9))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO10))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO11))
+        frames.append(pygame.image.load(globals.IMG_CARGANDO12))
+
 
         tam_nuevo = (50, 50)
         frames = [pygame.transform.scale(frame, tam_nuevo) for frame in frames]
