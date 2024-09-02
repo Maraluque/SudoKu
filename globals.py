@@ -34,7 +34,6 @@ ARCHIVO_PUNTUACION = os.path.join(directorio_actual, "puntuacion.csv")
 ARCHIVO_CONFIGURACION = os.path.join(directorio_actual, "configuracion.csv")
 
 # Utilidades
-# Lee el archivo de configuración csv y devuelve el valor de accesibilidad
 def es_accesible():
     accesible = False
     try:
