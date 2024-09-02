@@ -75,13 +75,13 @@ class Sudoku:
             if resolver:
                 self.calcular_posibles(mostrar)
             
-        Resuelto = True
+        resuelto = True
         for fila in range(9):
             for columna in range(9):
                 if self.sudoku[fila][columna] == 0:
-                    Resuelto = False
+                    resuelto = False
 
-        return Resuelto
+        return resuelto
         
     def crear_sudoku(self, config):
         """
@@ -117,8 +117,6 @@ class Sudoku:
                 self.sudoku[fila][columna] = 0
                 self.calcular_posibles()
 
-
-        # Elección de dificultad
         if self.get_dificultad() == 0:
             for _ in range(7):
                 fila, columna = random.choice(casillas)
@@ -178,13 +176,10 @@ class Sudoku:
         - True si es posible colocar el número en la celda, False de lo contrario.
 
         """
-        # Verificar fila
         if numero in self.sudoku[fila] and columna != self.sudoku[fila].tolist().index(numero):
             return False
-        # Verificar columna
         if numero in [fila[columna] for fila in self.sudoku] and fila != [fila[columna] for fila in self.sudoku].index(numero):
             return False
-        # Verificar cuadrado 3x3
         inicio_fila = (fila // 3) * 3
         inicio_columna = (columna // 3) * 3
         if numero in self.sudoku[inicio_fila:inicio_fila+3, inicio_columna:inicio_columna+3]:

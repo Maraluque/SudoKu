@@ -18,7 +18,7 @@ class Tablero:
         - columna: entero que representa la columna de la celda.
         - valor: entero que representa el valor a establecer en la celda.
         """
-        if self.inicial[fila, columna] == 0:  # Solo permitir cambios en celdas que eran 0 inicialmente
+        if self.inicial[fila, columna] == 0:
             if self.sudoku[fila][columna] == valor:
                 return
             elif self.es_posible(fila, columna, valor):
@@ -34,7 +34,7 @@ class Tablero:
         - fila: entero que representa la fila de la celda.
         - columna: entero que representa la columna de la celda.
         """
-        if self.inicial[fila][columna] == 0:  # Solo permitir borrar en celdas que eran 0 inicialmente
+        if self.inicial[fila][columna] == 0:
             self.sudoku[fila][columna] = 0
 
     def borrar_tablero(self):
@@ -45,7 +45,6 @@ class Tablero:
             for columna in range(9):
                 self.sudoku[fila][columna] = self.inicial[fila][columna]
 
-        # Limpiar la pantalla
         self.pantalla.fill(globals.BLANCO)
 
         self.imprimir_numeros()
@@ -64,13 +63,10 @@ class Tablero:
         Retorna:
         - True si es posible colocar el número en la celda, False en caso contrario.
         """
-        # Verificar fila
         if numero in self.sudoku[fila]:
             return False
-        # Verificar columna
         if numero in [fila[columna] for fila in self.sudoku]:
             return False
-        # Verificar cuadrado 3x3
         inicio_fila = (fila // 3) * 3
         inicio_columna = (columna // 3) * 3
         if numero in self.sudoku[inicio_fila:inicio_fila+3, inicio_columna:inicio_columna+3]:
@@ -156,7 +152,7 @@ class Tablero:
         """
         for fila in range(9):
             for columna in range(9):
-                if self.inicial[fila, columna] == 0:  # Solo comprobar celdas que no estaban rellenas inicialmente
+                if self.inicial[fila, columna] == 0:
                     if self.sudoku[fila][columna] != self.resuelto[fila][columna]:
                         self.iluminar_celda(fila, columna, globals.AMARILLO)
                     else:
@@ -183,7 +179,6 @@ class Tablero:
                         globals.MARGEN + fila * globals.TAMAÑO_CELDA + globals.TAMAÑO_CELDA / 2
                     ))
                     self.pantalla.blit(texto, texto_rect)
-        # Dibujar las líneas del tablero
         for i in range(10):
             grosor = 4 if i % 3 == 0 else 1
             pygame.draw.line(self.pantalla, globals.NEGRO, (globals.MARGEN, globals.MARGEN + i * globals.TAMAÑO_CELDA), (globals.MARGEN + 9 * globals.TAMAÑO_CELDA, globals.MARGEN + i * globals.TAMAÑO_CELDA), grosor)

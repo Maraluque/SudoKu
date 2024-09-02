@@ -12,7 +12,6 @@ class Juego:
         self.pantalla = pantalla
         self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
         self.temporizador_iniciado = False
-        self.seleccionando_dificultad = False
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
         self.tiempo_pausa = 0
@@ -44,7 +43,6 @@ class Juego:
         click = pygame.mouse.get_pressed()
         rect = pygame.Rect(x, y, ancho, alto)
 
-        # Sombra
         sombra_rect = rect.copy()
         sombra_rect.topleft = (rect.topleft[0] + 5, rect.topleft[1] + 5)
         pygame.draw.rect(self.pantalla, globals.GRIS, sombra_rect, border_radius=globals.BORDER_RADIUS)
@@ -58,15 +56,13 @@ class Juego:
             pygame.draw.rect(self.pantalla, color_inactivo, rect, border_radius=globals.BORDER_RADIUS)
             texto_color = globals.BLANCO
 
-        # Añadir logo centrado si se proporciona
         if logo:
             logo_rect = logo.get_rect()
             logo_rect.center = rect.center
             self.pantalla.blit(logo, logo_rect)
         else:
-            # Añadir texto centrado
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE)
-            texto = fuente.render(mensaje, True, texto_color)  # Use texto_color for the text color
+            texto = fuente.render(mensaje, True, texto_color)
             texto_rect = texto.get_rect(center=rect.center)
             self.pantalla.blit(texto, texto_rect)
 
@@ -79,24 +75,21 @@ class Juego:
         Carga una serie de imágenes y las muestra en secuencia para simular una animación de carga.
 
         """
-        # Cargar imágenes de la animación
-        frames = [pygame.image.load(f'img/cargando{i}.png') for i in range(1, 12)]  # Asegúrate de tener frame1.png, frame2.png, etc.
+        frames = [pygame.image.load(f'img/cargando{i}.png') for i in range(1, 12)]
 
-        # Redimensionar los fotogramas
-        tam_nuevo = (50, 50)  # Tamaño deseado para los fotogramas
+        tam_nuevo = (50, 50)
         frames = [pygame.transform.scale(frame, tam_nuevo) for frame in frames]
 
-        # Calcular las coordenadas para centrar la animación
         ancho_pantalla, alto_pantalla = self.pantalla.get_size()
         x_centro = (ancho_pantalla - tam_nuevo[0]) // 2
         y_centro = (alto_pantalla - tam_nuevo[1]) // 2
 
         self.pantalla.fill(globals.BLANCO)
         for frame in frames:
-            self.pantalla.fill(globals.BLANCO)  # Limpiar la pantalla
-            self.pantalla.blit(frame, (x_centro, y_centro))  # Dibujar el frame en el centro de la pantalla
+            self.pantalla.fill(globals.BLANCO)
+            self.pantalla.blit(frame, (x_centro, y_centro))
             pygame.display.flip()
-            time.sleep(0.1)  # Esperar un poco antes de mostrar el siguiente frame
+            time.sleep(0.1)
 
     def mostrar_puntuacion(self):
         """
@@ -110,10 +103,13 @@ class Juego:
         puntuaciones = []
         with open(globals.ARCHIVO_PUNTUACION, mode='r', newline='') as archivo:
             reader = csv.reader(archivo)
-            next(reader)  # Saltar la cabecera
+            next(reader)
             for row in reader:
                 puntuaciones.append(row)
         puntuaciones.sort(key=lambda x: (x[0], float(x[1])))
+
+        # leer si hay alguna puntuacion y meterlo en un booleano
+        
 
         fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
@@ -144,7 +140,6 @@ class Juego:
 
             fuente = pygame.font.Font(globals.fuente, globals.TAM_FUENTE_PUNTUACION)
             fuente_columnas = pygame.font.Font(globals.fuente, globals.TAM_FUENTE - 4)
-            fuente_titulo = pygame.font.Font(globals.fuente, globals.TAM_FUENTE + 10)
             fuente_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE_PUNTUACION)
             fuente_columnas_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE)
             fuente_titulo_negrita = pygame.font.Font(globals.fuente_negrita, globals.TAM_FUENTE + 10)
@@ -153,7 +148,6 @@ class Juego:
             self.pantalla.blit(texto_titulo, texto_titulo_rect)
 
             fila = 100
-            # Cabecera de la tabla
             texto_cabecera = fuente_columnas_negrita.render("Fácil", True, globals.NEGRO)
             texto_cabecera_rect = texto_cabecera.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila))
             self.pantalla.blit(texto_cabecera, texto_cabecera_rect)
@@ -170,7 +164,6 @@ class Juego:
             texto_media_rect = texto_media.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 200, fila + 356))
             self.pantalla.blit(texto_media, texto_media_rect)
 
-            # Líneas separadoras
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 50, fila - 25), (globals.PANTALLA_ANCHO // 2 - 50, fila + 380), 2)
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 - 150, fila - 75), (globals.PANTALLA_ANCHO // 2 - 150, fila + 380), 2)
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (globals.PANTALLA_ANCHO // 2 + 50, fila - 25), (globals.PANTALLA_ANCHO // 2 + 50, fila + 380), 2)
@@ -188,10 +181,8 @@ class Juego:
 
             fila += 50
 
-            # Crear matriz para almacenar las puntuaciones
             matriz_puntuaciones = [[None, None, None] for _ in range(7)]
 
-            # Mostrar las primeras 7 puntuaciones de cada dificultad
             facil_count = 0
             media_count = 0
             dificil_count = 0
@@ -206,7 +197,6 @@ class Juego:
                     matriz_puntuaciones[dificil_count][2] = str(round(float(puntuacion[1]) / 60, 2)) + " m"
                     dificil_count += 1
 
-            # Mostrar la matriz en formato tabla
             for i in range(6):
                 if matriz_puntuaciones[i][0] is not None:
                     if i == 0:
@@ -233,13 +223,10 @@ class Juego:
                     self.pantalla.blit(texto_puntuacion_dificil, texto_puntuacion_dificil_rect)
 
                 fila += 50
-            
-            # Calcular promedio de cada tipo de dificultad
-            promedio_facil = sum(float(p[0].split(" ")[0]) for p in matriz_puntuaciones if p[0]) / facil_count
-            promedio_media = sum(float(p[1].split(" ")[0]) for p in matriz_puntuaciones if p[1]) / media_count
-            promedio_dificil = sum(float(p[2].split(" ")[0]) for p in matriz_puntuaciones if p[2]) / dificil_count
+            promedio_facil = sum(float(p[0].split(" ")[0]) for p in matriz_puntuaciones if p[0]) / facil_count if any(p[0] for p in matriz_puntuaciones) else 0
+            promedio_media = sum(float(p[1].split(" ")[0]) for p in matriz_puntuaciones if p[1]) / media_count if any(p[1] for p in matriz_puntuaciones) else 0
+            promedio_dificil = sum(float(p[2].split(" ")[0]) for p in matriz_puntuaciones if p[2]) / dificil_count if any(p[2] for p in matriz_puntuaciones) else 0
 
-            # Mostrar promedio en color gris claro
             texto_promedio_facil = fuente.render(f"{round(promedio_facil, 2)} m", True, globals.GRIS_CLARO)
             texto_promedio_facil_rect = texto_promedio_facil.get_rect(center=(globals.PANTALLA_ANCHO // 2 - 100, fila + 7))
             self.pantalla.blit(texto_promedio_facil, texto_promedio_facil_rect)
@@ -253,7 +240,7 @@ class Juego:
             self.pantalla.blit(texto_promedio_dificil, texto_promedio_dificil_rect)
 
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def seleccionar_dificultad(self):
         """
@@ -265,11 +252,11 @@ class Juego:
         Returns:
             int: El índice de la dificultad seleccionada (0 para Fácil, 1 para Medio, 2 para Difícil).
         """
-        self.seleccionando_dificultad = True
+        seleccionando_dificultad = True
         fondo = pygame.image.load(globals.RUTA_FONDO)
         fondo = pygame.transform.scale(fondo, (globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
 
-        while self.seleccionando_dificultad:
+        while seleccionando_dificultad:
             self.pantalla.fill(globals.BLANCO)
             self.pantalla.blit(fondo, (0, 0))
 
@@ -286,23 +273,20 @@ class Juego:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
                     if boton_facil.collidepoint(mouse_pos):
-                        self.seleccionando_dificultad = False
+                        seleccionando_dificultad = False
                         self.set_dificultad(0)
                     elif boton_medio.collidepoint(mouse_pos):
-                        self.seleccionando_dificultad = False
+                        seleccionando_dificultad = False
                         self.set_dificultad(1)
                     elif boton_dificil.collidepoint(mouse_pos):
-                        self.seleccionando_dificultad = False
+                        seleccionando_dificultad = False
                         self.set_dificultad(2)
                     elif boton_volver.collidepoint(mouse_pos):
-                        self.seleccionando_dificultad = False
+                        seleccionando_dificultad = False
                         self.mostrar_menu()
                     
-
-                
-
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
             
 
@@ -316,7 +300,6 @@ class Juego:
             dificultad (int): El índice de la dificultad seleccionada (0 para Fácil, 1 para Medio, 2 para Difícil).
         """
         self.dificultad = dificultad
-        self.seleccionando_dificultad = False
 
     def empezar_juego(self):
         """
@@ -328,7 +311,6 @@ class Juego:
         Comprueba si el jugador ha completado correctamente el sudoku y muestra un mensaje de felicitación en caso afirmativo.
 
         """
-        # pantalla de carga y selección de dificultad
         self.dificultad = self.seleccionar_dificultad()
         self.mostrar_pantalla_carga()
         self.instancia_sudoku.set_dificultad(self.dificultad)
@@ -340,7 +322,6 @@ class Juego:
         celda_seleccionada = None
         cambio_en_tablero = True
 
-        #CARGAR IMAGEN LEYENDA
         leyenda = pygame.image.load(globals.RUTA_LEYENDA)
         leyenda = pygame.transform.scale(leyenda, (235, 235))
         
@@ -383,14 +364,9 @@ class Juego:
                 self.tablero.imprimir_tablero()
                 cambio_en_tablero = False
 
-            # Dibujar botones y leyenda
-            
-
-            # Cargar imágenes
             logo_pausa = pygame.image.load(globals.RUTA_IMG_PAUSAR)
             logo_reanudar = pygame.image.load(globals.RUTA_IMG_INICIAR)
 
-            # Escalar imágenes al tamaño adecuado
             logo_pausa = pygame.transform.scale(logo_pausa, (50, 50))
             logo_reanudar = pygame.transform.scale(logo_reanudar, (50, 50))
 
@@ -411,7 +387,7 @@ class Juego:
             
 
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def comprobar_solucion(self):
         """
@@ -426,9 +402,9 @@ class Juego:
         for fila in range(9):
             for columna in range(9):
                 if self.tablero.sudoku[fila][columna] == self.tablero.resuelto[fila][columna]:
-                    self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO, False)  # Celda correcta
+                    self.iluminar_celda_seleccionada(fila, columna, globals.VERDE_CLARO, False)
                 else:
-                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO, False, True)  # Celda incorrecta
+                    self.iluminar_celda_seleccionada(fila, columna, globals.MORADO_CLARO, False, True)
                     completo = False
         self.tablero.imprimir_numeros()
         self.tablero.imprimir_tablero()
@@ -570,17 +546,15 @@ class Juego:
             columna (int): La columna de la celda seleccionada.
 
         """
-        # Iluminar las celdas del cuadrado 3x3
         inicio_fila = (fila // 3) * 3
         inicio_columna = (columna // 3) * 3
         for i in range(3):
             for j in range(3):
                 self.dibujar_rectangulo(inicio_fila + i, inicio_columna + j, globals.VERDE_CLARO, False)
 
-        # Iluminar las celdas horizontales y verticales
         for i in range(9):
-            self.dibujar_rectangulo(fila, i, globals.VERDE_CLARO, False)  # Horizontal
-            self.dibujar_rectangulo(i, columna, globals.VERDE_CLARO, False)  # Vertical
+            self.dibujar_rectangulo(fila, i, globals.VERDE_CLARO, False)
+            self.dibujar_rectangulo(i, columna, globals.VERDE_CLARO, False)
 
     def iluminar_celda_seleccionada(self, fila, columna, color, central, incorrecta=False):
         """
@@ -664,7 +638,7 @@ class Juego:
                         self.ver_tutorial_pagina2()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
     
     def ver_tutorial_pagina2(self):
         """
@@ -703,7 +677,7 @@ class Juego:
                         self.ver_tutorial_pagina3()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def ver_tutorial_pagina3(self):
         """
@@ -742,7 +716,7 @@ class Juego:
                         self.ver_tutorial_pagina4()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def ver_tutorial_pagina4(self):
         """
@@ -781,7 +755,7 @@ class Juego:
                         self.ver_tutorial_pagina5()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def ver_tutorial_pagina5(self):
         """
@@ -820,7 +794,7 @@ class Juego:
                         self.ver_tutorial_pagina6()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def ver_tutorial_pagina6(self):
         """
@@ -855,7 +829,7 @@ class Juego:
                         self.ver_tutorial_pagina5()
             
             pygame.display.flip()
-            pygame.time.Clock().tick(60) # 60 FPS
+            pygame.time.Clock().tick(60)
 
     def ver_creditos(self):
         """
@@ -893,7 +867,6 @@ class Juego:
             texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 70))
             self.pantalla.blit(texto_titulo, texto_titulo_rect)
 
-            # Añadir texto del trabajo de fin de grado
             texto_tfg = fuente_normal.render("Trabajo de Fin de Grado de Ingeniería Informática", True, globals.NEGRO)
             texto_tfg_rect = texto_tfg.get_rect(center=(globals.PANTALLA_ANCHO // 2, 160))
             self.pantalla.blit(texto_tfg, texto_tfg_rect)
@@ -913,8 +886,6 @@ class Juego:
             texto_dept = fuente_normal.render("Departamento de informática", True, globals.NEGRO)
             texto_dept_rect = texto_dept.get_rect(center=(globals.PANTALLA_ANCHO // 2, 320))
             self.pantalla.blit(texto_dept, texto_dept_rect)
-
-
             
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
@@ -935,7 +906,6 @@ class Juego:
         Muestra la pantalla de ajustes en la que se pueden modificar diferentes configuraciones del juego, como el modo de accesibilidad y la dificultad.
         Permite al jugador volver al menú principal.
         """
-        # edición de los ajustes del juego
         en_ajustes = True
         
         fondo = pygame.image.load(globals.RUTA_FONDO_PUNTUACION)
@@ -955,7 +925,6 @@ class Juego:
             texto_titulo_rect = texto_titulo.get_rect(center=(globals.PANTALLA_ANCHO // 2, 40))
             self.pantalla.blit(texto_titulo, texto_titulo_rect)
 
-            # Configuración de accesibilidad
             texto_modo_accesibilidad = fuente_columnas.render("Modo accesibilidad", True, globals.NEGRO)
             texto_modo_accesibilidad_rect = texto_modo_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 140))
             self.pantalla.blit(texto_modo_accesibilidad, texto_modo_accesibilidad_rect)
@@ -968,23 +937,18 @@ class Juego:
             texto_estado_accesibilidad_rect = texto_estado_accesibilidad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 310))
             self.pantalla.blit(texto_estado_accesibilidad, texto_estado_accesibilidad_rect)
 
-            # Línea horizontal
             pygame.draw.line(self.pantalla, globals.GRIS_CLARO, (150, 340), (globals.PANTALLA_ANCHO - 150, 340), 2)
 
-            # Configuración de dificultad
             texto_configuracion_dificultad = fuente_columnas.render("Nivel de dificultad (modo difícil)", True, globals.NEGRO)
             texto_configuracion_dificultad_rect = texto_configuracion_dificultad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 390))
             self.pantalla.blit(texto_configuracion_dificultad, texto_configuracion_dificultad_rect)
 
-            # Botón de reducir dificultad
             boton_reducir_dificultad = self.dibujar_boton("-", (globals.PANTALLA_ANCHO - 130) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL2)
             
-            # Número de dificultad
             texto_dificultad = fuente_columnas.render(str(self.config["dificil"]), True, globals.NEGRO)
             texto_dificultad_rect = texto_dificultad.get_rect(center=(globals.PANTALLA_ANCHO // 2, 440))
             self.pantalla.blit(texto_dificultad, texto_dificultad_rect)
 
-            # Botón de aumentar dificultad
             boton_aumentar_dificultad = self.dibujar_boton("+", (globals.PANTALLA_ANCHO + 50) // 2, 420, 40, 40, globals.GRIS_CLARO, globals.AZUL2)
 
             for evento in pygame.event.get():
@@ -1005,8 +969,6 @@ class Juego:
                     elif boton_aumentar_dificultad.collidepoint(evento.pos):
                         self.modificar_dificultad_dificil(1)
                     
-            
-    
             pygame.display.flip()
             pygame.time.Clock().tick(60)
 
@@ -1045,7 +1007,6 @@ class Juego:
                     texto_linea_rect = texto_linea.get_rect(center=(rectangulo.centerx, rectangulo.centery - 40 + i * 30))
                     self.pantalla.blit(texto_linea, texto_linea_rect)
 
-                # dibujar botón de aceptar y al ser pulsado que aviso = false
                 boton_aceptar = self.dibujar_boton("Aceptar", globals.PANTALLA_ANCHO // 2 - 50, globals.PANTALLA_ALTO // 2 + 50, 100, 40, globals.GRIS_CLARO, globals.MORADO)
                 for evento in pygame.event.get():
                     if evento.type == pygame.QUIT:
@@ -1061,7 +1022,7 @@ class Juego:
             lines = archivo.readlines()
     
         with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
-            archivo.write("")  # Clear the file before writing
+            archivo.write("")
             writer = csv.writer(archivo)
             comprobado = False
             for line in lines:
@@ -1071,7 +1032,7 @@ class Juego:
                 elif "dificil" in line:
                     writer.writerow(["dificil", self.config["dificil"]])
                 else:
-                    writer.writerow(line.strip().split(','))  # Write each line as a CSV row
+                    writer.writerow(line.strip().split(','))
 
     def toggle_accesibilidad(self, accesible):
         """
@@ -1086,7 +1047,7 @@ class Juego:
             lines = archivo.readlines()
     
         with open(globals.ARCHIVO_CONFIGURACION, mode='w', newline='') as archivo:
-            archivo.write("")  # Clear the file before writing
+            archivo.write("")
             writer = csv.writer(archivo)
             comprobado = False
             for line in lines:
@@ -1096,7 +1057,7 @@ class Juego:
                 elif "accesibilidad" in line:
                     writer.writerow(["accesibilidad", str(accesible)])
                 else:
-                    writer.writerow(line.strip().split(','))  # Write each line as a CSV row
+                    writer.writerow(line.strip().split(','))
 
     def mostrar_menu(self):
         """
@@ -1113,7 +1074,6 @@ class Juego:
         while en_menu:
 
             self.pantalla.fill(globals.BLANCO)
-            
             self.pantalla.blit(fondo, (0, 0))
             
             boton_empezar = self.dibujar_boton("Empezar", 550, 50, 200, 50, globals.GRIS_CLARO, globals.AZUL1, self.empezar_juego)
@@ -1139,11 +1099,11 @@ class Juego:
                         self.ver_creditos()
                         en_menu = False
                     elif boton_salir.collidepoint(mouse_pos):
-                        self.salir_juego()
-                        en_menu = False
+                        pygame.quit()
+                        sys.exit()
                     elif boton_puntuacion.collidepoint(mouse_pos):
-                        self.seleccionando_dificultad = False
                         self.mostrar_puntuacion()
+                        en_menu = False
                     elif boton_ajustes.collidepoint(mouse_pos):
                         self.ajustes()
                         en_menu = False
