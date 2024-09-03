@@ -26,6 +26,8 @@ if __name__ == "__main__":
             writer.writerow(["Configuracion", "Valor"])
             writer.writerow(["accesibilidad", False])
             writer.writerow(["dificil",2])
+            config["accesibilidad"] = False
+            config["dificil"] = 2
 
     logo = pygame.image.load(globals.RUTA_LOGO)
 
