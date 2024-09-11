@@ -1,4 +1,4 @@
-# Sudoku
+# Sudo ku
 ## Descripción
 Este proyecto es un juego de Sudoku desarrollado en Python con una interfaz gráfica de usuario (GUI). El objetivo es proporcionar una experiencia agradable y desafiante para los aficionados al Sudoku, con diferentes niveles de dificultad y la capacidad de resolver los puzzles automáticamente.
 
@@ -18,7 +18,7 @@ Para ejecutar este juego, necesitarás tener Python instalado en tu sistema. Pue
 ## Instalación
 1. Clona este repositorio a tu máquina local usando:
 ```
-git clone https://github.com/tu-usuario/tu-repositorio.git
+git clone https://github.com/Maraluque/SudoKu.git
 ```
 
 2. Navega al directorio del proyecto y ejecuta:
@@ -32,5 +32,3 @@ Al iniciar el juego, selecciona el nivel de dificultad que prefieras. El juego c
 ## Contribuir
 Si deseas contribuir a este proyecto, por favor, primero discute el cambio que deseas realizar a través de issues antes de hacer un pull request.
 
-## Licencia
-Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
