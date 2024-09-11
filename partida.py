@@ -7,10 +7,9 @@ import time
 import csv
 import tablero
 
-class Juego:
+class Partida:
     def __init__(self, pantalla, sudoku_instance, ajustes):
         self.pantalla = pantalla
-        self.boton_comprobar = pygame.Rect(100, 400, 200, 50)
         self.temporizador_iniciado = False
         self.tiempo_inicio = 0
         self.tiempo_actual = 0
@@ -471,6 +470,7 @@ class Juego:
 
 
         pygame.display.update()
+
     def dibujar_temporizador(self):
         """
         Dibuja el temporizador en la pantalla.

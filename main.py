@@ -3,7 +3,7 @@ import csv
 import globals
 import pygame
 import sudoku
-import juego
+import partida as juego
 
 if __name__ == "__main__":
     if not os.path.exists(globals.ARCHIVO_PUNTUACION):
@@ -37,5 +37,5 @@ if __name__ == "__main__":
     pantalla = pygame.display.set_mode((globals.PANTALLA_ANCHO, globals.PANTALLA_ALTO))
     pygame.display.set_caption("Sudo ku")
     s = sudoku.Sudoku()
-    jugar = juego.Juego(pantalla, s, config)
+    jugar = juego.Partida(pantalla, s, config)
     jugar.mostrar_menu()
